@@ -137,7 +137,6 @@
   #define DOGLCD
   #define IS_U8GLIB_ST7920 1
   #define IS_ULTIPANEL 1
-  #define ENCODER_PULSES_PER_STEP 2
 
 #elif ENABLED(MKS_12864OLED)
 
@@ -374,7 +373,6 @@
 
   #define LCD_I2C_TYPE_PCF8575    // I2C Character-based 12864 display
   #define LCD_I2C_ADDRESS 0x27    // I2C Address of the port expander
-  #define IS_ULTIPANEL 1
 
   #if ENABLED(LCD_SAINSMART_I2C_2004)
     #define LCD_WIDTH 20
@@ -528,6 +526,10 @@
 
 #if ANY(HAS_MARLINUI_MENU, EXTENSIBLE_UI, HAS_DWIN_E3V2)
   #define HAS_MANUAL_MOVE_MENU 1
+#endif
+
+#if ANY(HAS_MARLINUI_U8GLIB, EXTENSIBLE_UI, HAS_MARLINUI_HD44780, IS_TFTGLCD_PANEL, IS_DWIN_MARLINUI, DWIN_CREALITY_LCD_JYERSUI)
+  #define CAN_SHOW_REMAINING_TIME 1
 #endif
 
 #if HAS_MARLINUI_U8GLIB
@@ -991,7 +993,7 @@
  *  with shared motion and temperature settings.
  *
  * DISTINCT_E is the number of distinguished extruders. By default this
- *  will be 1 which indicates all extruders share the same settings.
+ *  well be 1 which indicates all extruders share the same settings.
  *
  * E_INDEX_N(E) should be used to get the E index of any item that might be
  *  distinguished.
@@ -1021,11 +1023,8 @@
 #endif
 
 // Helper macros for extruder and hotend arrays
-#define _EXTRUDER_LOOP(E) for (int8_t E = 0; E < EXTRUDERS; E++)
-#define EXTRUDER_LOOP() _EXTRUDER_LOOP(e)
-#define _HOTEND_LOOP(H) for (int8_t H = 0; H < HOTENDS; H++)
-#define HOTEND_LOOP() _HOTEND_LOOP(e)
-
+#define EXTRUDER_LOOP() for (int8_t e = 0; e < EXTRUDERS; e++)
+#define HOTEND_LOOP() for (int8_t e = 0; e < HOTENDS; e++)
 #define ARRAY_BY_EXTRUDERS(V...) ARRAY_N(EXTRUDERS, V)
 #define ARRAY_BY_EXTRUDERS1(v1) ARRAY_N_1(EXTRUDERS, v1)
 #define ARRAY_BY_HOTENDS(V...) ARRAY_N(HOTENDS, V)
@@ -1068,6 +1067,20 @@
 #if ENABLED(BLTOUCH)
   #ifndef Z_PROBE_SERVO_NR
     #define Z_PROBE_SERVO_NR 0
+  #endif
+  #ifdef DEACTIVATE_SERVOS_AFTER_MOVE
+    #error "BLTOUCH requires DEACTIVATE_SERVOS_AFTER_MOVE to be to disabled. Please update your Configuration.h file."
+  #endif
+
+  // Always disable probe pin inverting for BLTouch
+  #if Z_MIN_PROBE_ENDSTOP_INVERTING
+    #error "BLTOUCH requires Z_MIN_PROBE_ENDSTOP_INVERTING set to false. Please update your Configuration.h file."
+  #endif
+
+  #if ENABLED(Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN)
+    #if Z_MIN_ENDSTOP_INVERTING
+      #error "BLTOUCH requires Z_MIN_ENDSTOP_INVERTING set to false. Please update your Configuration.h file."
+    #endif
   #endif
 #endif
 
@@ -1194,61 +1207,45 @@
 #elif X_HOME_DIR < 0
   #define X_HOME_TO_MIN 1
 #endif
-#if HAS_Y_AXIS
-  #if Y_HOME_DIR > 0
-    #define Y_HOME_TO_MAX 1
-  #elif Y_HOME_DIR < 0
-    #define Y_HOME_TO_MIN 1
-  #endif
+#if Y_HOME_DIR > 0
+  #define Y_HOME_TO_MAX 1
+#elif Y_HOME_DIR < 0
+  #define Y_HOME_TO_MIN 1
 #endif
-#if HAS_Z_AXIS
-  #if Z_HOME_DIR > 0
-    #define Z_HOME_TO_MAX 1
-  #elif Z_HOME_DIR < 0
-    #define Z_HOME_TO_MIN 1
-  #endif
+#if Z_HOME_DIR > 0
+  #define Z_HOME_TO_MAX 1
+#elif Z_HOME_DIR < 0
+  #define Z_HOME_TO_MIN 1
 #endif
-#if HAS_I_AXIS
-  #if I_HOME_DIR > 0
-    #define I_HOME_TO_MAX 1
-  #elif I_HOME_DIR < 0
-    #define I_HOME_TO_MIN 1
-  #endif
+#if I_HOME_DIR > 0
+  #define I_HOME_TO_MAX 1
+#elif I_HOME_DIR < 0
+  #define I_HOME_TO_MIN 1
 #endif
-#if HAS_J_AXIS
-  #if J_HOME_DIR > 0
-    #define J_HOME_TO_MAX 1
-  #elif J_HOME_DIR < 0
-    #define J_HOME_TO_MIN 1
-  #endif
+#if J_HOME_DIR > 0
+  #define J_HOME_TO_MAX 1
+#elif J_HOME_DIR < 0
+  #define J_HOME_TO_MIN 1
 #endif
-#if HAS_K_AXIS
-  #if K_HOME_DIR > 0
-    #define K_HOME_TO_MAX 1
-  #elif K_HOME_DIR < 0
-    #define K_HOME_TO_MIN 1
-  #endif
+#if K_HOME_DIR > 0
+  #define K_HOME_TO_MAX 1
+#elif K_HOME_DIR < 0
+  #define K_HOME_TO_MIN 1
 #endif
-#if HAS_U_AXIS
-  #if U_HOME_DIR > 0
-    #define U_HOME_TO_MAX 1
-  #elif U_HOME_DIR < 0
-    #define U_HOME_TO_MIN 1
-  #endif
+#if U_HOME_DIR > 0
+  #define U_HOME_TO_MAX 1
+#elif U_HOME_DIR < 0
+  #define U_HOME_TO_MIN 1
 #endif
-#if HAS_V_AXIS
-  #if V_HOME_DIR > 0
-    #define V_HOME_TO_MAX 1
-  #elif V_HOME_DIR < 0
-    #define V_HOME_TO_MIN 1
-  #endif
+#if V_HOME_DIR > 0
+  #define V_HOME_TO_MAX 1
+#elif V_HOME_DIR < 0
+  #define V_HOME_TO_MIN 1
 #endif
-#if HAS_W_AXIS
-  #if W_HOME_DIR > 0
-    #define W_HOME_TO_MAX 1
-  #elif W_HOME_DIR < 0
-    #define W_HOME_TO_MIN 1
-  #endif
+#if W_HOME_DIR > 0
+  #define W_HOME_TO_MAX 1
+#elif W_HOME_DIR < 0
+  #define W_HOME_TO_MIN 1
 #endif
 
 /**
@@ -1502,7 +1499,7 @@
   #endif
 #elif ENABLED(TFT_GENERIC)
   #define TFT_DEFAULT_ORIENTATION (TFT_EXCHANGE_XY | TFT_INVERT_X | TFT_INVERT_Y)
-  #if NONE(TFT_RES_320x240, TFT_RES_480x272, TFT_RES_480x320, TFT_RES_1024x600)
+  #if NONE(TFT_RES_320x240, TFT_RES_480x272, TFT_RES_480x320)
     #define TFT_RES_320x240
   #endif
   #if NONE(TFT_INTERFACE_FSMC, TFT_INTERFACE_SPI)
@@ -1580,8 +1577,6 @@
   #elif TFT_HEIGHT == 600
     #if ENABLED(TFT_INTERFACE_LTDC)
       #define TFT_1024x600_LTDC
-    #else
-      #define TFT_1024x600_SIM  // "Simulation" - for testing purposes only
     #endif
   #endif
 #endif
@@ -1592,7 +1587,7 @@
   #define HAS_UI_480x320 1
 #elif EITHER(TFT_480x272, TFT_480x272_SPI)
   #define HAS_UI_480x272 1
-#elif EITHER(TFT_1024x600_LTDC, TFT_1024x600_SIM)
+#elif defined(TFT_1024x600_LTDC)
   #define HAS_UI_1024x600 1
 #endif
 #if ANY(HAS_UI_320x240, HAS_UI_480x320, HAS_UI_480x272)
@@ -1603,7 +1598,7 @@
 
 // This emulated DOGM has 'touch/xpt2046', not 'tft/xpt2046'
 #if ENABLED(TOUCH_SCREEN)
-  #if TOUCH_IDLE_SLEEP_MINS
+  #if TOUCH_IDLE_SLEEP
     #define HAS_TOUCH_SLEEP 1
   #endif
   #if NONE(TFT_TOUCH_DEVICE_GT911, TFT_TOUCH_DEVICE_XPT2046)

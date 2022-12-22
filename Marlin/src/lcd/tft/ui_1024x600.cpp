@@ -57,8 +57,7 @@ void MarlinUI::tft_idle() {
   #endif
 
   tft.queue.async();
-
-  TERN_(TOUCH_SCREEN, if (tft.queue.is_empty()) touch.idle()); // Touch driver is not DMA-aware, so only check for touch controls after screen drawing is completed
+  TERN_(TOUCH_SCREEN, touch.idle());
 }
 
 #if ENABLED(SHOW_BOOTSCREEN)
@@ -326,10 +325,7 @@ void MarlinUI::draw_status_screen() {
 
   #if ENABLED(TOUCH_SCREEN)
     add_control(900, y, menu_main, imgSettings);
-    #if ENABLED(SDSUPPORT)
-      const bool cm = card.isMounted(), pa = printingIsActive();
-      add_control(12, y, menu_media, imgSD, cm && !pa, COLOR_CONTROL_ENABLED, cm && pa ? COLOR_BUSY : COLOR_CONTROL_DISABLED);
-    #endif
+    TERN_(SDSUPPORT, add_control(12, y, menu_media, imgSD, !printingIsActive(), COLOR_CONTROL_ENABLED, card.isMounted() && printingIsActive() ? COLOR_BUSY : COLOR_CONTROL_DISABLED));
   #endif
 
   y += 100;

@@ -29,9 +29,7 @@
   #define BOARD_INFO_NAME "Melzi"
 #endif
 
-#ifndef FAN_PIN
-  #define FAN_PIN                              4
-#endif
+#define IS_MELZI 1
 
 // Alter timing for graphical display
 #if IS_U8GLIB_ST7920
