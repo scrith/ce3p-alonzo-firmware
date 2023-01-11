@@ -895,8 +895,6 @@
 
 // @section bltouch
 
-#define BLTOUCH
-
 #if ENABLED(BLTOUCH)
   /**
    * Either: Use the defaults (recommended) or: For special purposes, use the following DEFINES
