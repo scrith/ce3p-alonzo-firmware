@@ -246,14 +246,6 @@ typedef struct SettingsDataStruct {
   float planner_z_fade_height;                          // M420 Zn  planner.z_fade_height
 
   //
-  // AUTOTEMP
-  //
-  #if ENABLED(AUTOTEMP)
-    celsius_t planner_autotemp_max, planner_autotemp_min;
-    float planner_autotemp_factor;
-  #endif
-
-  //
   // MESH_BED_LEVELING
   //
   float mbl_z_offset;                                   // bedlevel.z_offset
@@ -480,9 +472,7 @@ typedef struct SettingsDataStruct {
   //
   // SKEW_CORRECTION
   //
-  #if ENABLED(SKEW_CORRECTION)
-    skew_factor_t planner_skew_factor;                  // M852 I J K
-  #endif
+  skew_factor_t planner_skew_factor;                    // M852 I J K
 
   //
   // ADVANCED_PAUSE_FEATURE
@@ -866,16 +856,6 @@ void MarlinSettings::postprocess() {
     }
 
     //
-    // AUTOTEMP
-    //
-    #if ENABLED(AUTOTEMP)
-      _FIELD_TEST(planner_autotemp_max);
-      EEPROM_WRITE(planner.autotemp.max);
-      EEPROM_WRITE(planner.autotemp.min);
-      EEPROM_WRITE(planner.autotemp.factor);
-    #endif
-
-    //
     // Mesh Bed Leveling
     //
     {
@@ -1115,7 +1095,7 @@ void MarlinSettings::postprocess() {
     {
       _FIELD_TEST(bedPID);
       #if ENABLED(PIDTEMPBED)
-        const auto &pid = thermalManager.temp_bed.pid;
+        const PID_t &pid = thermalManager.temp_bed.pid;
         const raw_pid_t bed_pid = { pid.p(), pid.i(), pid.d() };
       #else
         const raw_pid_t bed_pid = { NAN, NAN, NAN };
@@ -1129,7 +1109,7 @@ void MarlinSettings::postprocess() {
     {
       _FIELD_TEST(chamberPID);
       #if ENABLED(PIDTEMPCHAMBER)
-        const auto &pid = thermalManager.temp_chamber.pid;
+        const PID_t &pid = thermalManager.temp_chamber.pid;
         const raw_pid_t chamber_pid = { pid.p(), pid.i(), pid.d() };
       #else
         const raw_pid_t chamber_pid = { NAN, NAN, NAN };
@@ -1473,10 +1453,8 @@ void MarlinSettings::postprocess() {
     //
     // Skew correction factors
     //
-    #if ENABLED(SKEW_CORRECTION)
-      _FIELD_TEST(planner_skew_factor);
-      EEPROM_WRITE(planner.skew_factor);
-    #endif
+    _FIELD_TEST(planner_skew_factor);
+    EEPROM_WRITE(planner.skew_factor);
 
     //
     // Advanced Pause filament load & unload lengths
@@ -1824,15 +1802,6 @@ void MarlinSettings::postprocess() {
       // Global Leveling
       //
       EEPROM_READ(TERN(ENABLE_LEVELING_FADE_HEIGHT, new_z_fade_height, dummyf));
-
-      //
-      // AUTOTEMP
-      //
-      #if ENABLED(AUTOTEMP)
-        EEPROM_READ(planner.autotemp.max);
-        EEPROM_READ(planner.autotemp.min);
-        EEPROM_READ(planner.autotemp.factor);
-      #endif
 
       //
       // Mesh (Manual) Bed Leveling
@@ -2454,7 +2423,6 @@ void MarlinSettings::postprocess() {
       //
       // Skew correction factors
       //
-      #if ENABLED(SKEW_CORRECTION)
       {
         skew_factor_t skew_factor;
         _FIELD_TEST(planner_skew_factor);
@@ -2469,7 +2437,6 @@ void MarlinSettings::postprocess() {
           }
         #endif
       }
-      #endif
 
       //
       // Advanced Pause filament load & unload lengths
@@ -2527,7 +2494,7 @@ void MarlinSettings::postprocess() {
       #endif
 
       //
-      // Creality DWIN User Data
+      // DWIN User Data
       //
       #if ENABLED(DWIN_LCD_PROUI)
       {
@@ -2852,7 +2819,7 @@ void MarlinSettings::postprocess() {
         #endif
 
         #if ENABLED(DWIN_LCD_PROUI)
-          status = !BedLevelTools.meshvalidate();
+          status = !bedLevelTools.meshvalidate();
           if (status) {
             bedlevel.invalidate();
             LCD_MESSAGE(MSG_UBL_MESH_INVALID);
@@ -3031,15 +2998,6 @@ void MarlinSettings::reset() {
   //
   TERN_(ENABLE_LEVELING_FADE_HEIGHT, new_z_fade_height = (DEFAULT_LEVELING_FADE_HEIGHT));
   TERN_(HAS_LEVELING, reset_bed_level());
-
-  //
-  // AUTOTEMP
-  //
-  #if ENABLED(AUTOTEMP)
-    planner.autotemp.max = AUTOTEMP_MAX;
-    planner.autotemp.min = AUTOTEMP_MIN;
-    planner.autotemp.factor = AUTOTEMP_FACTOR;
-  #endif
 
   //
   // X Axis Twist Compensation

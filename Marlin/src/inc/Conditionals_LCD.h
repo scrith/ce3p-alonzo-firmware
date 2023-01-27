@@ -36,21 +36,6 @@
   #define FYSETC_MINI_12864_2_1
 #endif
 
-// Updated DGUS_UI shorthand single option can be used, or old settings, for now
-#if DGUS_UI_IS(ORIGIN)
-  #define DGUS_LCD_UI_ORIGIN
-#elif DGUS_UI_IS(FYSETC)
-  #define DGUS_LCD_UI_FYSETC
-#elif DGUS_UI_IS(HIPRECY)
-  #define DGUS_LCD_UI_HIPRECY
-#elif DGUS_UI_IS(MKS)
-  #define DGUS_LCD_UI_MKS
-#elif DGUS_UI_IS(RELOADED)
-  #define DGUS_LCD_UI_RELOADED
-#elif DGUS_UI_IS(IA_CREALITY)
-  #define DGUS_LCD_UI_IA_CREALITY
-#endif
-
 /**
  * General Flags that may be set below by specific LCDs
  *
@@ -477,11 +462,12 @@
 #endif
 
 // Aliases for LCD features
-#if !DGUS_UI_IS(NONE)
+#if ANY(DGUS_LCD_UI_ORIGIN, DGUS_LCD_UI_FYSETC, DGUS_LCD_UI_HIPRECY, DGUS_LCD_UI_MKS)
+  #define HAS_DGUS_LCD_CLASSIC 1
+#endif
+
+#if EITHER(HAS_DGUS_LCD_CLASSIC, DGUS_LCD_UI_RELOADED)
   #define HAS_DGUS_LCD 1
-  #if DGUS_UI_IS(ORIGIN, FYSETC, HIPRECY, MKS)
-    #define HAS_DGUS_LCD_CLASSIC 1
-  #endif
 #endif
 
 // Extensible UI serial touch screens. (See src/lcd/extui)
@@ -1298,6 +1284,7 @@
   // Clear probe pin settings when no probe is selected
   #undef Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN
   #undef USE_PROBE_FOR_Z_HOMING
+  #undef Z_MIN_PROBE_REPEATABILITY_TEST
 #endif
 
 #if ENABLED(BELTPRINTER) && !defined(HOME_Y_BEFORE_X)

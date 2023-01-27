@@ -198,12 +198,13 @@ float Planner::mm_per_step[DISTINCT_AXES];      // (mm) Millimeters per step
   constexpr bool Planner::leveling_active;
 #endif
 
-#if ENABLED(SKEW_CORRECTION)
-  skew_factor_t Planner::skew_factor; // Initialized by settings.load()
-#endif
+skew_factor_t Planner::skew_factor; // Initialized by settings.load()
 
 #if ENABLED(AUTOTEMP)
-  autotemp_t Planner::autotemp = { AUTOTEMP_MIN, AUTOTEMP_MAX, AUTOTEMP_FACTOR, false };
+  celsius_t Planner::autotemp_max = 250,
+            Planner::autotemp_min = 210;
+  float Planner::autotemp_factor = 0.1f;
+  bool Planner::autotemp_enabled = false;
 #endif
 
 // private:
@@ -1433,8 +1434,8 @@ void Planner::check_axes_activity() {
   #if ENABLED(AUTOTEMP_PROPORTIONAL)
     void Planner::_autotemp_update_from_hotend() {
       const celsius_t target = thermalManager.degTargetHotend(active_extruder);
-      autotemp.min = target + AUTOTEMP_MIN_P;
-      autotemp.max = target + AUTOTEMP_MAX_P;
+      autotemp_min = target + AUTOTEMP_MIN_P;
+      autotemp_max = target + AUTOTEMP_MAX_P;
     }
   #endif
 
@@ -1445,8 +1446,8 @@ void Planner::check_axes_activity() {
    */
   void Planner::autotemp_update() {
     _autotemp_update_from_hotend();
-    autotemp.factor = TERN(AUTOTEMP_PROPORTIONAL, AUTOTEMP_FACTOR_P, 0);
-    autotemp.enabled = autotemp.factor != 0;
+    autotemp_factor = TERN(AUTOTEMP_PROPORTIONAL, AUTOTEMP_FACTOR_P, 0);
+    autotemp_enabled = autotemp_factor != 0;
   }
 
   /**
@@ -1456,13 +1457,13 @@ void Planner::check_axes_activity() {
   void Planner::autotemp_M104_M109() {
     _autotemp_update_from_hotend();
 
-    if (parser.seenval('S')) autotemp.min = parser.value_celsius();
-    if (parser.seenval('B')) autotemp.max = parser.value_celsius();
+    if (parser.seenval('S')) autotemp_min = parser.value_celsius();
+    if (parser.seenval('B')) autotemp_max = parser.value_celsius();
 
     // When AUTOTEMP_PROPORTIONAL is enabled, F0 disables autotemp.
     // Normally, leaving off F also disables autotemp.
-    autotemp.factor = parser.seen('F') ? parser.value_float() : TERN(AUTOTEMP_PROPORTIONAL, AUTOTEMP_FACTOR_P, 0);
-    autotemp.enabled = autotemp.factor != 0;
+    autotemp_factor = parser.seen('F') ? parser.value_float() : TERN(AUTOTEMP_PROPORTIONAL, AUTOTEMP_FACTOR_P, 0);
+    autotemp_enabled = autotemp_factor != 0;
   }
 
   /**
@@ -1473,8 +1474,8 @@ void Planner::check_axes_activity() {
   void Planner::autotemp_task() {
     static float oldt = 0.0f;
 
-    if (!autotemp.enabled) return;
-    if (thermalManager.degTargetHotend(active_extruder) < autotemp.min - 2) return; // Below the min?
+    if (!autotemp_enabled) return;
+    if (thermalManager.degTargetHotend(active_extruder) < autotemp_min - 2) return; // Below the min?
 
     float high = 0.0f;
     for (uint8_t b = block_buffer_tail; b != block_buffer_head; b = next_block_index(b)) {
@@ -1485,8 +1486,8 @@ void Planner::check_axes_activity() {
       }
     }
 
-    float t = autotemp.min + high * autotemp.factor;
-    LIMIT(t, autotemp.min, autotemp.max);
+    float t = autotemp_min + high * autotemp_factor;
+    LIMIT(t, autotemp_min, autotemp_max);
     if (t < oldt) t = t * (1.0f - (AUTOTEMP_OLDWEIGHT)) + oldt * (AUTOTEMP_OLDWEIGHT);
     oldt = t;
     thermalManager.setTargetHotend(t, active_extruder);
