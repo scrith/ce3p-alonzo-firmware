@@ -1412,6 +1412,7 @@
  *          Take extreme care when setting up this feature.
  */
 //#define SENSORLESS_PROBING
+#define DIAG_JUMPERS_REMOVED // Motherboard DIAG jumpers must be removed when SENSORLESS_HOMING is disabled. (Define DIAG_JUMPERS_REMOVED to suppress this warning.)
 
 /**
  * Allen key retractable z-probe as seen on many Kossel delta printers - https://reprap.org/wiki/Kossel#Automatic_bed_leveling_probe
