@@ -119,7 +119,7 @@ tags
 
 # PlatformIO files/dirs
 .pio*
-!.pio/build
+!.pio/build/*/firmware.bin
 .pioenvs
 .piolibdeps
 .clang_complete
