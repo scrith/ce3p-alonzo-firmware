@@ -118,7 +118,7 @@ tags
 *.su
 
 # PlatformIO files/dirs
-.pio*
+.pio/*
 !.pio/build/*/firmware.bin
 .pioenvs
 .piolibdeps
