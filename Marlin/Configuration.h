@@ -1493,10 +1493,10 @@
 #define PROBING_MARGIN 10
 
 // X and Y axis travel speed (mm/min) between probes
-#define XY_PROBE_FEEDRATE (200*60)
+#define XY_PROBE_FEEDRATE (300*60)
 
 // Feedrate (mm/min) for the first approach when double-probing (MULTIPLE_PROBING == 2)
-#define Z_PROBE_FEEDRATE_FAST (4*60)
+#define Z_PROBE_FEEDRATE_FAST (6*60)
 
 // Feedrate (mm/min) for the "accurate" probe of each point
 #define Z_PROBE_FEEDRATE_SLOW (Z_PROBE_FEEDRATE_FAST / 2)
@@ -1886,8 +1886,8 @@
  * these options to restore the prior leveling state or to always enable
  * leveling immediately after G28.
  */
-//#define RESTORE_LEVELING_AFTER_G28
-#define ENABLE_LEVELING_AFTER_G28
+#define RESTORE_LEVELING_AFTER_G28
+//#define ENABLE_LEVELING_AFTER_G28
 
 /**
  * Auto-leveling needs preheating
@@ -2225,7 +2225,7 @@
 #define PREHEAT_1_FAN_SPEED     0 // Value from 0 to 255
 
 #define PREHEAT_2_LABEL       "PETG"
-#define PREHEAT_2_TEMP_HOTEND 220
+#define PREHEAT_2_TEMP_HOTEND 230
 #define PREHEAT_2_TEMP_BED     75
 #define PREHEAT_2_TEMP_CHAMBER 35
 #define PREHEAT_2_FAN_SPEED     0 // Value from 0 to 255
