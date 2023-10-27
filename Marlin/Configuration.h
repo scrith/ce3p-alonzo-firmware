@@ -1602,9 +1602,10 @@
 
 // Require minimum nozzle and/or bed temperature for probing
 //#define PREHEAT_BEFORE_PROBING
+//conflicts with PREHEAT_BEFORE_LEVELING, only use one
 #if ENABLED(PREHEAT_BEFORE_PROBING)
-  #define PROBING_NOZZLE_TEMP 120   // (°C) Only applies to E0 at this time
-  #define PROBING_BED_TEMP     50
+  #define PROBING_NOZZLE_TEMP   0   // (°C) Only applies to E0 at this time
+  #define PROBING_BED_TEMP     65
 #endif
 
 // For Inverting Stepper Enable Pins (Active Low) use 0, Non Inverting (Active High) use 1
@@ -1700,6 +1701,10 @@
 #define X_BED_SIZE 235
 #define Y_BED_SIZE 220
 // printable bed size is reduced because of new hotend
+
+// Service position
+#define X_SERVICE_POS 115
+#define Y_SERVICE_POS 110
 
 // Travel limits (linear=mm, rotational=°) after homing, corresponding to endstop positions.
 #define X_MIN_POS -0
@@ -1893,9 +1898,10 @@
  * Auto-leveling needs preheating
  */
 #define PREHEAT_BEFORE_LEVELING
+//conflicts with PREHEAT_BEFORE_PROBING, only use one
 #if ENABLED(PREHEAT_BEFORE_LEVELING)
-  #define LEVELING_NOZZLE_TEMP  60   // (°C) Only applies to E0 at this time
-  #define LEVELING_BED_TEMP     60
+  #define LEVELING_NOZZLE_TEMP   0   // (°C) Only applies to E0 at this time
+  #define LEVELING_BED_TEMP     65
 #endif
 
 /**
@@ -1957,7 +1963,7 @@
 #if EITHER(AUTO_BED_LEVELING_LINEAR, AUTO_BED_LEVELING_BILINEAR)
 
   // Set the number of grid points per dimension.
-  #define GRID_MAX_POINTS_X 7
+  #define GRID_MAX_POINTS_X 6
   #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
 
   // Probe along the Y axis, advancing X after each column
