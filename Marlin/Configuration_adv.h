@@ -2113,9 +2113,9 @@
 #define LIN_ADVANCE
 #if ENABLED(LIN_ADVANCE)
   #if ENABLED(DISTINCT_E_FACTORS)
-    #define ADVANCE_K { 0.22 }    // (mm) Compression length per 1mm/s extruder speed, per extruder
+    #define ADVANCE_K { 0.01 }    // (mm) Compression length per 1mm/s extruder speed, per extruder
   #else
-    #define ADVANCE_K 0.22        // (mm) Compression length applying to all extruders
+    #define ADVANCE_K 0.01        // (mm) Compression length applying to all extruders
   #endif
   //#define ADVANCE_K_EXTRA       // Add a second linear advance constant, configurable with M900 L.
   //#define LA_DEBUG              // Print debug information to serial during operation. Disable for production use.
@@ -3742,42 +3742,47 @@
 // Custom Menu: Main Menu
 #define CUSTOM_MENU_MAIN
 #if ENABLED(CUSTOM_MENU_MAIN)
-  #define CUSTOM_MENU_MAIN_TITLE "Special"
+  #define CUSTOM_MENU_MAIN_TITLE "Automations"
   #define CUSTOM_MENU_MAIN_SCRIPT_DONE "M117 Finished"
   //#define CUSTOM_MENU_MAIN_SCRIPT_AUDIBLE_FEEDBACK
   #define CUSTOM_MENU_MAIN_SCRIPT_RETURN   // Return to status screen after a script
   #define CUSTOM_MENU_MAIN_ONLY_IDLE         // Only show custom menu when the machine is idle
 
-  #define MAIN_MENU_ITEM_1_DESC "Present Bed"
-  #define MAIN_MENU_ITEM_1_GCODE "G28 0 X Y\nG0 F8000 X" STRINGIFY(X_MIN_POS) " Y" STRINGIFY(Y_MAX_POS) "\nG4 S30"
+  #define MAIN_MENU_ITEM_1_DESC "Present bed"
+  #define MAIN_MENU_ITEM_1_GCODE "G28 0 X Y \nG0 F8000 X" STRINGIFY(X_MIN_POS) " Y" STRINGIFY(Y_MAX_POS) " \nG4 S30"
   //home only X and Y if untrusted then present bed, dwell 30 seconds
   //#define MAIN_MENU_ITEM_1_CONFIRM
 
-  #define MAIN_MENU_ITEM_2_DESC "Service Nozzle"
-  #define MAIN_MENU_ITEM_2_GCODE "G28 \nG0 F3000 X" STRINGIFY(X_SERVICE_POS) " Y" STRINGIFY(Y_SERVICE_POS) " Z120 \nM300 S220 P50 \nM109 S250 \nM300 S220 P50 \nG4 S60 \nM300 S220 P50 \nM104 S0"
+  #define MAIN_MENU_ITEM_2_DESC "Nozzle service"
+  #define MAIN_MENU_ITEM_2_GCODE "M117 Nozzle service \nG28 \nM117 Moving to service position \nG0 F3000 X" STRINGIFY(X_SERVICE_POS) " Y" STRINGIFY(Y_SERVICE_POS) " Z120 \nM300 S220 P50 \nM117 Heating Nozzle \nM109 S250 \nM140 S0 \nM300 S220 P50 \nM117 One minute to service \nG4 S60 \nM300 S220 P50 \nM117 Cooling Down \nM104 S0"
   //home to center, move up 120mm on z, heat nozzle, dwell 60 seconds, cool down
   //Hotend will idle timeout after 180
   #define MAIN_MENU_ITEM_2_CONFIRM
 
-  #define MAIN_MENU_ITEM_3_DESC "Cold Pull"
-  #define MAIN_MENU_ITEM_3_GCODE "G28 \nG0 F3000 X" STRINGIFY(X_SERVICE_POS) " Y" STRINGIFY(Y_SERVICE_POS) "Z20 \nM300 S220 P50 \nM109 S100 \nG4 S30 \nM300 S220 P50 \nM104 S0"
+  #define MAIN_MENU_ITEM_3_DESC "Cold pull PLA"
+  #define MAIN_MENU_ITEM_3_GCODE "M117 Cold pull PLA \nG28 \nM117 Moving to service position \nG0 F3000 X" STRINGIFY(X_SERVICE_POS) " Y" STRINGIFY(Y_SERVICE_POS) " Z20 \nM300 S220 P50 \nM117 Heating Nozzle \nM109 S100 \nM140 S0 \nM300 S220 P50 \nM117 Thirty second lockout \nG4 S30 \nM300 S220 P50 \nM117 Cooling Down \nM104 S0"
   //home to center, move up 20mm on z, low-heat nozzle, dwell 30 seconds, cool down, 
   #define MAIN_MENU_ITEM_3_CONFIRM
 
-  #define MAIN_MENU_ITEM_4_DESC "Prepare for " PREHEAT_1_LABEL
-  #define MAIN_MENU_ITEM_4_GCODE "M190 S" STRINGIFY(PREHEAT_1_TEMP_BED) "\nG28\nG29\nM500\nM104 S" STRINGIFY(PREHEAT_1_TEMP_HOTEND) "\nM400\nG0 F8000 X" STRINGIFY(X_MIN_POS) " Y" STRINGIFY(Y_MAX_POS) "\nM300 S220 P50"
-  //preheat preheat bed with wait, home, build bed mesh, save results, move to back left corner, beep
+  #define MAIN_MENU_ITEM_4_DESC "Cold pull PETG"
+  #define MAIN_MENU_ITEM_4_GCODE "M117 Cold pull PETG \nG28 \nM117 Moving to service position \nG0 F3000 X" STRINGIFY(X_SERVICE_POS) " Y" STRINGIFY(Y_SERVICE_POS) " Z20 \nM300 S220 P50 \nM117 Heating Nozzle \nM109 S140 \nM140 S0 \nM300 S220 P50 \nM117 Thirty second lockout \nG4 S30 \nM300 S220 P50 \nM117 Cooling Down \nM104 S0"
+  //home to center, move up 20mm on z, low-heat nozzle, dwell 30 seconds, cool down, 
   #define MAIN_MENU_ITEM_4_CONFIRM
 
-  #define MAIN_MENU_ITEM_5_DESC "Prepare for " PREHEAT_2_LABEL
-  #define MAIN_MENU_ITEM_5_GCODE "M190 S" STRINGIFY(PREHEAT_2_TEMP_BED) "\nG28\nG29\nM500\nM104 S" STRINGIFY(PREHEAT_2_TEMP_HOTEND) "\nM400\nG0 F8000 X" STRINGIFY(X_MIN_POS) " Y" STRINGIFY(Y_MAX_POS) "\nM300 S220 P50"
+  #define MAIN_MENU_ITEM_5_DESC "Prepare for " PREHEAT_1_LABEL
+  #define MAIN_MENU_ITEM_5_GCODE "M117 Preheating bed \nM190 S" STRINGIFY(PREHEAT_1_TEMP_BED) "\nM117 Homing \nG28 M117 Building mesh \nG29 M117 Saving mesh \nM500 M117 Preheating nozzle \nM104 S" STRINGIFY(PREHEAT_1_TEMP_HOTEND) " \nG0 F8000 X" STRINGIFY(X_MIN_POS) " Y" STRINGIFY(Y_MAX_POS) "\n M300 S220 P50"
   //preheat preheat bed with wait, home, build bed mesh, save results, move to back left corner, beep
   #define MAIN_MENU_ITEM_5_CONFIRM
 
-  #define MAIN_MENU_ITEM_6_DESC "Prepare for " PREHEAT_3_LABEL
-  #define MAIN_MENU_ITEM_6_GCODE "M190 S" STRINGIFY(PREHEAT_3_TEMP_BED) "\nG28\nG29\nM500\nM104 S" STRINGIFY(PREHEAT_3_TEMP_HOTEND) "\nM400\nG0 F8000 X" STRINGIFY(X_MIN_POS) " Y" STRINGIFY(Y_MAX_POS) "\nM300 S220 P50"
+  #define MAIN_MENU_ITEM_6_DESC "Prepare for " PREHEAT_2_LABEL
+  #define MAIN_MENU_ITEM_6_GCODE "M117 Preheating bed \nM190 S" STRINGIFY(PREHEAT_2_TEMP_BED) "\nM117 Homing \nG28 M117 Building mesh \nG29 M117 Saving mesh \nM500 M117 Preheating nozzle \nM104 S" STRINGIFY(PREHEAT_2_TEMP_HOTEND) " \nG0 F8000 X" STRINGIFY(X_MIN_POS) " Y" STRINGIFY(Y_MAX_POS) "\n M300 S220 P50"
   //preheat preheat bed with wait, home, build bed mesh, save results, move to back left corner, beep
   #define MAIN_MENU_ITEM_6_CONFIRM
+
+  #define MAIN_MENU_ITEM_7_DESC "Prepare for " PREHEAT_3_LABEL
+  #define MAIN_MENU_ITEM_7_GCODE "M117 Preheating bed \nM190 S" STRINGIFY(PREHEAT_3_TEMP_BED) "\nM117 Homing \nG28 M117 Building mesh \nG29 M117 Saving mesh \nM500 M117 Preheating nozzle \nM104 S" STRINGIFY(PREHEAT_3_TEMP_HOTEND) " \nG0 F8000 X" STRINGIFY(X_MIN_POS) " Y" STRINGIFY(Y_MAX_POS) "\n M300 S220 P50"
+  //preheat preheat bed with wait, home, build bed mesh, save results, move to back left corner, beep
+  #define MAIN_MENU_ITEM_7_CONFIRM
 
 #endif
 
