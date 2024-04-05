@@ -35,6 +35,7 @@
  * from where the binary was downloaded or the source code was compiled.
  */
 //#define DETAILED_BUILD_VERSION SHORT_BUILD_VERSION
+#define DETAILED_BUILD_VERSION "2.1.2.2-bugfix"
 
 /**
  * The STRING_DISTRIBUTION_DATE represents when the binary file was built,
