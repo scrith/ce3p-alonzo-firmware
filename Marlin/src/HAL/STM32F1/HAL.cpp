@@ -1,9 +1,10 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
- * Based on Sprinter and grbl.
- * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
+ * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2016 Bob Cousins bobcousins42@googlemail.com
+ * Copyright (c) 2015-2016 Nico Tonnhofer wurstnase.reprap@gmail.com
+ * Copyright (c) 2017 Victor Perez
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -306,6 +307,7 @@ enum ADCIndex : uint8_t {
   OPTITEM(HAS_TEMP_ADC_PROBE, TEMP_PROBE)
   OPTITEM(HAS_TEMP_COOLER, TEMP_COOLER)
   OPTITEM(HAS_TEMP_BOARD, TEMP_BOARD)
+  OPTITEM(HAS_TEMP_SOC, TEMP_SOC)
   OPTITEM(FILAMENT_WIDTH_SENSOR, FILWIDTH)
   OPTITEM(HAS_ADC_BUTTONS, ADC_KEY)
   OPTITEM(HAS_JOY_ADC_X, JOY_X)
@@ -334,6 +336,7 @@ void MarlinHAL::adc_init() {
     OPTITEM(HAS_TEMP_ADC_PROBE, TEMP_PROBE_PIN)
     OPTITEM(HAS_TEMP_COOLER, TEMP_COOLER_PIN)
     OPTITEM(HAS_TEMP_BOARD, TEMP_BOARD_PIN)
+    OPTITEM(HAS_TEMP_SOC, TEMP_SOC_PIN)
     OPTITEM(FILAMENT_WIDTH_SENSOR, FILWIDTH_PIN)
     OPTITEM(HAS_ADC_BUTTONS, ADC_KEYPAD_PIN)
     OPTITEM(HAS_JOY_ADC_X, JOY_X_PIN)
@@ -372,6 +375,7 @@ void MarlinHAL::adc_start(const pin_t pin) {
     _TCASE(HAS_TEMP_ADC_PROBE,    TEMP_PROBE_PIN,            TEMP_PROBE)
     _TCASE(HAS_TEMP_COOLER,       TEMP_COOLER_PIN,           TEMP_COOLER)
     _TCASE(HAS_TEMP_BOARD,        TEMP_BOARD_PIN,            TEMP_BOARD)
+    _TCASE(HAS_TEMP_SOC,          TEMP_SOC_PIN,              TEMP_SOC)
     _TCASE(HAS_JOY_ADC_X,         JOY_X_PIN,                 JOY_X)
     _TCASE(HAS_JOY_ADC_Y,         JOY_Y_PIN,                 JOY_Y)
     _TCASE(HAS_JOY_ADC_Z,         JOY_Z_PIN,                 JOY_Z)

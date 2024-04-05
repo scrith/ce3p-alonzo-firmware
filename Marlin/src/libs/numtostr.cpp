@@ -45,7 +45,7 @@ constexpr long UINTFLOAT(const float V, const int N) {
 
 char conv[9] = { 0 };
 
-// Format uint8_t (0-100) as rj string with __3% / _23% / 123% format
+// Format uint8_t (0-100) as rj string with 123% / _12% / __1% format
 const char* pcttostrpctrj(const uint8_t i) {
   conv[4] = RJDIGIT(i, 100);
   conv[5] = RJDIGIT(i, 10);
@@ -59,7 +59,7 @@ const char* ui8tostr4pctrj(const uint8_t i) {
   return pcttostrpctrj(ui8_to_percent(i));
 }
 
-// Convert unsigned 8bit int to string with __3 / _23 / 123 format
+// Convert unsigned 8bit int to string 123 format
 const char* ui8tostr3rj(const uint8_t i) {
   conv[5] = RJDIGIT(i, 100);
   conv[6] = RJDIGIT(i, 10);
@@ -74,7 +74,7 @@ const char* ui8tostr2(const uint8_t i) {
   return &conv[6];
 }
 
-// Convert signed 8bit int to rj string with __3 / _23 / 123 / -_3 / -23 format
+// Convert signed 8bit int to rj string with 123 or -12 format
 const char* i8tostr3rj(const int8_t x) {
   int xx = x;
   conv[5] = MINUSOR(xx, RJDIGIT(xx, 100));
@@ -222,7 +222,7 @@ const char* ftostr41ns(const_float_t f) {
   return &conv[3];
 }
 
-// Convert float to fixed-length string with 12.34 / _2.34 / -2.34 or -23.45 / 123.45 format
+// Convert signed float to fixed-length string with 12.34 / _2.34 / -2.34 or -23.45 / 123.45 format
 const char* ftostr42_52(const_float_t f) {
   if (f <= -10 || f >= 100) return ftostr52(f); // -23.45 / 123.45
   long i = INTFLOAT(f, 2);
@@ -234,7 +234,7 @@ const char* ftostr42_52(const_float_t f) {
   return &conv[3];
 }
 
-// Convert float to fixed-length string with 023.45 / -23.45 format
+// Convert signed float to fixed-length string with 023.45 / -23.45 format
 const char* ftostr52(const_float_t f) {
   long i = INTFLOAT(f, 2);
   conv[2] = MINUSOR(i, DIGIMOD(i, 10000));
@@ -246,7 +246,7 @@ const char* ftostr52(const_float_t f) {
   return &conv[2];
 }
 
-// Convert float to fixed-length string with 12.345 / _2.345 / -2.345 or -23.45 / 123.45 format
+// Convert signed float to fixed-length string with 12.345 / _2.345 / -2.345 or -23.45 / 123.45 format
 const char* ftostr53_63(const_float_t f) {
   if (f <= -10 || f >= 100) return ftostr63(f); // -23.456 / 123.456
   long i = INTFLOAT(f, 3);
@@ -259,7 +259,7 @@ const char* ftostr53_63(const_float_t f) {
   return &conv[2];
 }
 
-// Convert float to fixed-length string with 023.456 / -23.456 format
+// Convert signed float to fixed-length string with 023.456 / -23.456 format
 const char* ftostr63(const_float_t f) {
   long i = INTFLOAT(f, 3);
   conv[1] = MINUSOR(i, DIGIMOD(i, 100000));
@@ -418,19 +418,50 @@ const char* ftostr52sp(const_float_t f) {
   conv[3] = RJDIGIT(i, 1000);
   conv[4] = DIGIMOD(i, 100);
 
-  if ((dig = i % 10)) {           // Second digit after decimal point?
+  if ((dig = i % 10)) {          // second digit after decimal point?
     conv[5] = '.';
     conv[6] = DIGIMOD(i, 10);
     conv[7] = DIGIT(dig);
   }
   else {
-    if ((dig = (i / 10) % 10)) {  // First digit after decimal point?
+    if ((dig = (i / 10) % 10)) { // first digit after decimal point?
       conv[5] = '.';
       conv[6] = DIGIT(dig);
     }
-    else                          // Nothing after decimal point
+    else                          // nothing after decimal point
       conv[5] = conv[6] = ' ';
     conv[7] = ' ';
   }
+  return &conv[1];
+}
+
+// Convert unsigned 16bit int to string 1, 12, 123 format, capped at 999
+const char* utostr3(const uint16_t x) {
+  return i16tostr3left(_MIN(x, 999U));
+}
+
+// Convert signed float to space-padded string with 1.23, 12.34, 123.45 format
+const char* ftostr52sprj(const_float_t f) {
+  long i = INTFLOAT(f, 2);
+  LIMIT(i, -99999, 99999);            // cap to -999.99 - 999.99 range
+  if (WITHIN(i, -999, 999)) {         // -9.99 - 9.99 range
+    conv[1] = conv[2] = ' ';          // default to ' ' for smaller numbers
+    conv[3] = MINUSOR(i, ' ');
+  }
+  else if (WITHIN(i, -9999, 9999)) {  // -99.99 - 99.99 range
+    conv[1] = ' ';
+    conv[2] = MINUSOR(i, ' ');
+    conv[3] = DIGIMOD(i, 1000);
+  }
+  else {                              // -999.99 - 999.99 range
+    conv[1] = MINUSOR(i, ' ');
+    conv[2] = DIGIMOD(i, 10000);
+    conv[3] = DIGIMOD(i, 1000);
+  }
+  conv[4] = DIGIMOD(i, 100);          // always convert last 3 digits
+  conv[5] = '.';
+  conv[6] = DIGIMOD(i, 10);
+  conv[7] = DIGIMOD(i, 1);
+
   return &conv[1];
 }

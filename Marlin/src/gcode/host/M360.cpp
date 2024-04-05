@@ -37,7 +37,7 @@ static void config_prefix(PGM_P const name, PGM_P const pref=nullptr, const int8
   SERIAL_ECHOPGM("Config:");
   if (pref) SERIAL_ECHOPGM_P(pref);
   if (ind >= 0) { SERIAL_ECHO(ind); SERIAL_CHAR(':'); }
-  SERIAL_ECHOPGM_P(name, C(':'));
+  SERIAL_ECHOPGM_P(name, AS_CHAR(':'));
 }
 static void config_line(PGM_P const name, const float val, PGM_P const pref=nullptr, const int8_t ind=-1) {
   config_prefix(name, pref, ind);
@@ -161,6 +161,7 @@ void GcodeSuite::M360() {
   SERIAL_ECHOLNPGM(
     TERN_(DELTA,         "Delta")
     TERN_(IS_SCARA,      "SCARA")
+    TERN_(POLAR,         "Polar")
     TERN_(IS_CORE,       "Core")
     TERN_(MARKFORGED_XY, "MarkForgedXY")
     TERN_(MARKFORGED_YX, "MarkForgedYX")

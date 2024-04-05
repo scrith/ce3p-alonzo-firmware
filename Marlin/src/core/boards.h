@@ -54,6 +54,12 @@
 #define BOARD_RAMPS_PLUS_EEF          1033  // RAMPS Plus 3DYMY (Power outputs: Hotend0, Hotend1, Fan)
 #define BOARD_RAMPS_PLUS_SF           1034  // RAMPS Plus 3DYMY (Power outputs: Spindle, Controller Fan)
 
+#define BOARD_RAMPS_BTT_16_PLUS_EFB   1035  // RAMPS 1.6+ (Power outputs: Hotend, Fan, Bed)
+#define BOARD_RAMPS_BTT_16_PLUS_EEB   1036  // RAMPS 1.6+ (Power outputs: Hotend0, Hotend1, Bed)
+#define BOARD_RAMPS_BTT_16_PLUS_EFF   1037  // RAMPS 1.6+ (Power outputs: Hotend, Fan0, Fan1)
+#define BOARD_RAMPS_BTT_16_PLUS_EEF   1038  // RAMPS 1.6+ (Power outputs: Hotend0, Hotend1, Fan)
+#define BOARD_RAMPS_BTT_16_PLUS_SF    1039  // RAMPS 1.6+ (Power outputs: Spindle, Controller Fan)
+
 //
 // RAMPS Derivatives - ATmega1280, ATmega2560
 //
@@ -123,6 +129,8 @@
 #define BOARD_LONGER3D_LKx_PRO        1162  // Longer LKx PRO / Alfawise Uxx Pro (PRO version)
 #define BOARD_ZRIB_V53                1163  // Zonestar zrib V5.3 (Chinese RAMPS replica)
 #define BOARD_PXMALION_CORE_I3        1164  // Pxmalion Core I3
+#define BOARD_PANOWIN_CUTLASS         1165  // Panowin Cutlass (as found in the Panowin F1)
+#define BOARD_KODAMA_BARDO            1166  // Kodama Bardo V1.x (as found in the Kodama Trinus)
 
 //
 // RAMBo and derivatives
@@ -171,6 +179,7 @@
 #define BOARD_GT2560_V4_A20           1328  // Geeetech GT2560 Rev B for A20(M/T/D)
 #define BOARD_PROTONEER_CNC_SHIELD_V3 1329  // Mega controller & Protoneer CNC Shield V3.00
 #define BOARD_WEEDO_62A               1330  // WEEDO 62A board (TINA2, Monoprice Cadet, etc.)
+#define BOARD_GT2560_V41B             1331  // Geeetech GT2560 V4.1B for A10(M/T/D)
 
 //
 // ATmega1281, ATmega2561
@@ -189,12 +198,13 @@
 #define BOARD_MELZI_V2                1503  // Melzi V2
 #define BOARD_MELZI_MAKR3D            1504  // Melzi with ATmega1284 (MaKr3d version)
 #define BOARD_MELZI_CREALITY          1505  // Melzi Creality3D (for CR-10 etc)
-#define BOARD_MELZI_MALYAN            1506  // Melzi Malyan M150
-#define BOARD_MELZI_TRONXY            1507  // Tronxy X5S
-#define BOARD_STB_11                  1508  // STB V1.1
-#define BOARD_AZTEEG_X1               1509  // Azteeg X1
-#define BOARD_ANET_10                 1510  // Anet 1.0 (Melzi clone)
-#define BOARD_ZMIB_V2                 1511  // ZoneStar ZMIB V2
+#define BOARD_MELZI_CREALITY_ENDER2   1506  // Melzi Creality3D (for Ender-2)
+#define BOARD_MELZI_MALYAN            1507  // Melzi Malyan M150
+#define BOARD_MELZI_TRONXY            1508  // Tronxy X5S
+#define BOARD_STB_11                  1509  // STB V1.1
+#define BOARD_AZTEEG_X1               1510  // Azteeg X1
+#define BOARD_ANET_10                 1511  // Anet 1.0 (Melzi clone)
+#define BOARD_ZMIB_V2                 1512  // ZoneStar ZMIB V2
 
 //
 // Other ATmega644P, ATmega644, ATmega1284P
@@ -310,7 +320,7 @@
 #define BOARD_BTT_EBB42_V1_1          4000  // BigTreeTech EBB42 V1.1 (STM32G0B1CB)
 #define BOARD_BTT_SKR_MINI_E3_V3_0    4001  // BigTreeTech SKR Mini E3 V3.0 (STM32G0B0RE / STM32G0B1RE)
 #define BOARD_BTT_MANTA_E3_EZ_V1_0    4002  // BigTreeTech Manta E3 EZ V1.0 (STM32G0B1RE)
-#define BOARD_BTT_MANTA_M4P_V2_1      4003  // BigTreeTech Manta M4P V2.1 (STM32G0B0RE)
+#define BOARD_BTT_MANTA_M4P_V1_0      4003  // BigTreeTech Manta M4P V1.0 (STM32G0B0RE)
 #define BOARD_BTT_MANTA_M5P_V1_0      4004  // BigTreeTech Manta M5P V1.0 (STM32G0B1RE)
 #define BOARD_BTT_MANTA_M8P_V1_0      4005  // BigTreeTech Manta M8P V1.0 (STM32G0B1VE)
 #define BOARD_BTT_MANTA_M8P_V1_1      4006  // BigTreeTech Manta M8P V1.1 (STM32G0B1VE)
@@ -386,7 +396,9 @@
 #define BOARD_ZONESTAR_ZM3E4V2        5064  // Zonestar ZM3E4 V2 (STM32F103VC)
 #define BOARD_ERYONE_ERY32_MINI       5065  // Eryone Ery32 mini (STM32F103VE)
 #define BOARD_PANDA_PI_V29            5066  // Panda Pi V2.9 - Standalone (STM32F103RC)
-#define BOARD_SOVOL_V131              5067  // Sovol V1.3.1 (GD32F103RE)
+#define BOARD_SOVOL_V131              5067  // Sovol V1.3.1 (GD32F103RET6)
+#define BOARD_TRIGORILLA_V006         5068  // Trigorilla V0.0.6 (GD32F103RE)
+#define BOARD_KEDI_CONTROLLER_V1_2    5069  // EDUTRONICS Kedi Controller V1.2 (STM32F103RC)
 
 //
 // ARM Cortex-M4F
@@ -444,6 +456,9 @@
 #define BOARD_FYSETC_SPIDER_KING407   5242  // FYSETC Spider King407 (STM32F407ZG)
 #define BOARD_MKS_SKIPR_V1            5243  // MKS SKIPR v1.0 all-in-one board (STM32F407VE)
 #define BOARD_TRONXY_V10              5244  // TRONXY V10 (STM32F446ZE)
+#define BOARD_CREALITY_F401RE         5245  // Creality CR4NS200141C13 (STM32F401RE) as found in the Ender-5 S1
+#define BOARD_BLACKPILL_CUSTOM        5246  // Custom board based on STM32F401CDU6.
+#define BOARD_I3DBEEZ9_V1             5247  // I3DBEEZ9 V1 (STM32F407ZG)
 
 //
 // ARM Cortex-M7
@@ -458,6 +473,7 @@
 #define BOARD_BTT_SKR_V3_0            6006  // BigTreeTech SKR V3.0 (STM32H743VI / STM32H723VG)
 #define BOARD_BTT_SKR_V3_0_EZ         6007  // BigTreeTech SKR V3.0 EZ (STM32H743VI / STM32H723VG)
 #define BOARD_BTT_OCTOPUS_MAX_EZ_V1_0 6008  // BigTreeTech Octopus Max EZ V1.0 (STM32H723ZE)
+#define BOARD_BTT_OCTOPUS_PRO_V1_1    6009  // BigTreeTech Octopus Pro v1.1 (STM32H723ZE)
 
 //
 // Espressif ESP32 WiFi
@@ -473,6 +489,8 @@
 #define BOARD_PANDA_M4                7007  // Panda_M4
 #define BOARD_MKS_TINYBEE             7008  // MKS TinyBee based on ESP32 (with I2S stepper stream)
 #define BOARD_ENWI_ESPNP              7009  // enwi ESPNP based on ESP32 (with I2S stepper stream)
+#define BOARD_GODI_CONTROLLER_V1_0    7010  // Godi Controller based on ESP32 32-Bit V1.0
+#define BOARD_MM_JOKER                7011  // MagicMaker JOKER based on ESP32 (with I2S stepper stream)
 
 //
 // SAMD51 ARM Cortex-M4

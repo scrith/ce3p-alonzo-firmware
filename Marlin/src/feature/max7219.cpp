@@ -39,11 +39,12 @@
 
 #if ENABLED(MAX7219_DEBUG)
 
-#define MAX7219_ERRORS // Requires ~400 bytes of flash
+#define MAX7219_ERRORS // Disable to save 406 bytes of Program Memory
 
 #include "max7219.h"
 
 #include "../module/planner.h"
+#include "../module/stepper.h"
 #include "../MarlinCore.h"
 #include "../HAL/shared/Delay.h"
 
@@ -135,9 +136,7 @@ uint8_t Max7219::suspended; // = 0;
 
 void Max7219::error(FSTR_P const func, const int32_t v1, const int32_t v2/*=-1*/) {
   #if ENABLED(MAX7219_ERRORS)
-    SERIAL_ECHOPGM("??? Max7219::");
-    SERIAL_ECHOF(func, C('('));
-    SERIAL_ECHO(v1);
+    SERIAL_ECHO(F("??? Max7219::"), func, AS_CHAR('('), v1);
     if (v2 > 0) SERIAL_ECHOPGM(", ", v2);
     SERIAL_CHAR(')');
     SERIAL_EOL();
@@ -707,7 +706,7 @@ void Max7219::idle_tasks() {
 
   #ifdef MAX7219_DEBUG_PLANNER_QUEUE
     static int16_t last_depth = 0;
-    const int16_t current_depth = BLOCK_MOD(head - tail + (BLOCK_BUFFER_SIZE)) & 0xF;
+    const int16_t current_depth = (head - tail + BLOCK_BUFFER_SIZE) & (BLOCK_BUFFER_SIZE - 1) & 0xF;
     if (current_depth != last_depth) {
       quantity16(MAX7219_DEBUG_PLANNER_QUEUE, last_depth, current_depth, &row_change_mask);
       last_depth = current_depth;
@@ -720,6 +719,19 @@ void Max7219::idle_tasks() {
     if (current_time_fraction != last_time_fraction) {
       quantity(MAX7219_DEBUG_PROFILE, last_time_fraction, current_time_fraction, &row_change_mask);
       last_time_fraction = current_time_fraction;
+    }
+  #endif
+
+  #ifdef MAX7219_DEBUG_MULTISTEPPING
+    static uint8_t last_multistepping = 0;
+    const uint8_t multistepping = Stepper::steps_per_isr;
+    if (multistepping != last_multistepping) {
+      static uint8_t log2_old = 0;
+      uint8_t log2_new = 0;
+      for (uint8_t val = multistepping; val > 1; val >>= 1) log2_new++;
+      mark16(MAX7219_DEBUG_MULTISTEPPING, log2_old, log2_new, &row_change_mask);
+      last_multistepping = multistepping;
+      log2_old = log2_new;
     }
   #endif
 

@@ -212,6 +212,7 @@ extern "C" {
   #define CONFIG_USBCLK_DIV
 #endif
 
+
 extern void sysclk_enable_usb(void);
 extern void sysclk_disable_usb(void);
 

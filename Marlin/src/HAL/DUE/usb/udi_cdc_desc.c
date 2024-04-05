@@ -109,6 +109,7 @@ UDC_DESC_STORAGE usb_dev_desc_t udc_device_desc = {
   .bNumConfigurations = 1
 };
 
+
 #ifdef USB_DEVICE_HS_SUPPORT
 //! USB Device Qualifier Descriptor for HS
 COMPILER_WORD_ALIGNED

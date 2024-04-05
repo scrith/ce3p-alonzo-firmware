@@ -35,19 +35,19 @@
 
 namespace ExtUI {
 
-  void onStartup() { nextion.Startup();  }
-  void onIdle() { nextion.IdleLoop(); }
-  void onPrinterKilled(FSTR_P const error, FSTR_P const component) { nextion.PrinterKilled(error, component); }
+  void onStartup() { nextion.startup();  }
+  void onIdle() { nextion.idleLoop(); }
+  void onPrinterKilled(FSTR_P const error, FSTR_P const component) { nextion.printerKilled(error, component); }
   void onMediaInserted() {}
   void onMediaError() {}
   void onMediaRemoved() {}
-  void onPlayTone(const uint16_t frequency, const uint16_t duration/*=0*/) {}
+  void onPlayTone(const uint16_t frequency, const uint16_t duration) {}
   void onPrintTimerStarted() {}
   void onPrintTimerPaused() {}
   void onPrintTimerStopped() {}
   void onFilamentRunout(const extruder_t) {}
-  void onUserConfirmRequired(const char * const msg) { nextion.ConfirmationRequest(msg); }
-  void onStatusChanged(const char * const msg) { nextion.StatusChange(msg); }
+  void onUserConfirmRequired(const char * const msg) { nextion.confirmationRequest(msg); }
+  void onStatusChanged(const char * const msg) { nextion.statusChange(msg); }
 
   void onHomingStart() {}
   void onHomingDone() {}
@@ -119,7 +119,7 @@ namespace ExtUI {
   #if HAS_PID_HEATING
     void onPidTuning(const result_t rst) {
       // Called for temperature PID tuning result
-      nextion.PanelInfo(37);
+      nextion.panelInfo(37);
     }
   #endif
 

@@ -111,8 +111,8 @@ namespace ExtUI {
         case PID_STARTED:
           set_lcd_error(GET_TEXT_F(MSG_PID_AUTOTUNE));
           break;
-        case PID_BAD_EXTRUDER_NUM:
-          set_lcd_error(GET_TEXT_F(MSG_PID_BAD_EXTRUDER_NUM));
+        case PID_BAD_HEATER_ID:
+          set_lcd_error(GET_TEXT_F(MSG_PID_BAD_HEATER_ID));
           break;
         case PID_TEMP_TOO_HIGH:
           set_lcd_error(GET_TEXT_F(MSG_PID_TEMP_TOO_HIGH));
@@ -137,7 +137,7 @@ namespace ExtUI {
   void onMediaInserted() {}
   void onMediaError() {}
   void onMediaRemoved() {}
-  void onPlayTone(const uint16_t, const uint16_t/*=0*/) {}
+  void onPlayTone(const uint16_t, const uint16_t) {}
   void onFilamentRunout(const extruder_t extruder) {}
   void onUserConfirmRequired(const char * const) {}
   void onHomingStart() {}

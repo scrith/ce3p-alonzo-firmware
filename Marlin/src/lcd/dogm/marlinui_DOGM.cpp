@@ -47,7 +47,6 @@
 #endif
 
 #include "../lcdprint.h"
-#include "../utf8.h"
 #include "../../libs/numtostr.h"
 #include "../marlinui.h"
 
@@ -411,20 +410,38 @@ void MarlinUI::clear_lcd() { } // Automatically cleared by Picture Loop
   }
 
   // Draw a static line of text in the same idiom as a menu item
-  void MenuItem_static::draw(const uint8_t row, FSTR_P const ftpl, const uint8_t style/*=SS_DEFAULT*/, const char * const vstr/*=nullptr*/) {
+  void MenuItem_static::draw(const uint8_t row, FSTR_P const ftpl, const uint8_t style/*=SS_DEFAULT*/, const char *vstr/*=nullptr*/) {
 
     if (mark_as_selected(row, style & SS_INVERT)) {
       pixel_len_t n = LCD_PIXEL_WIDTH; // pixel width of string allowed
 
-      const int plen = ftpl ? calculateWidth(ftpl) : 0,
+      const bool center = bool(style & SS_CENTER), full = bool(style & SS_FULL);
+      const int pwide = ftpl ? calculateWidth(ftpl) : 0,
                 vlen = vstr ? utf8_strlen(vstr) : 0;
-      if (style & SS_CENTER) {
-        int pad = (LCD_PIXEL_WIDTH - plen - vlen * MENU_FONT_WIDTH) / MENU_FONT_WIDTH / 2;
-        while (--pad >= 0) n -= lcd_put_u8str(F(" "));
+      int pad = (center || full) ? ((LCD_PIXEL_WIDTH) - pwide - vlen * (MENU_FONT_WIDTH)) / (MENU_FONT_WIDTH) : 0;
+
+      // SS_CENTER: Pad with half of the unused space first
+      if (center) for (int lpad = pad / 2; lpad > 0; --lpad) n -= lcd_put_u8str(F(" "));
+
+      // Draw as much of the label as fits
+      if (pwide) {
+        const pixel_len_t expw = n;
+        n = lcd_put_u8str(ftpl, itemIndex, itemStringC, itemStringF, n / (MENU_FONT_WIDTH)) * (MENU_FONT_WIDTH);
+        pad -= (expw - n - pwide) / (MENU_FONT_WIDTH);  // Reduce the padding
       }
 
-      if (plen) n = lcd_put_u8str(ftpl, itemIndex, itemStringC, itemStringF, n / (MENU_FONT_WIDTH)) * (MENU_FONT_WIDTH);
-      if (vlen) n -= lcd_put_u8str_max(vstr, n);
+      if (vlen) {
+        // SS_FULL: Pad with enough space to justify the value
+        if (full && !center && n > MENU_FONT_WIDTH) {
+          // Move the leading colon from the value to the label
+          if (*vstr == ':') { n -= lcd_put_u8str(F(":")); vstr++; }
+          // Move spaces to the padding
+          while (*vstr == ' ') { vstr++; pad++; }
+          // Pad in-between
+          for (; pad > 0; --pad) n -= lcd_put_u8str(F(" "));
+        }
+        n -= lcd_put_u8str_max(vstr, n);
+      }
       while (n > MENU_FONT_WIDTH) n -= lcd_put_u8str(F(" "));
     }
   }
@@ -628,7 +645,7 @@ void MarlinUI::clear_lcd() { } // Automatically cleared by Picture Loop
 
   #endif // AUTO_BED_LEVELING_UBL
 
-  #if ANY(BABYSTEP_ZPROBE_GFX_OVERLAY, MESH_EDIT_GFX_OVERLAY)
+  #if ANY(BABYSTEP_GFX_OVERLAY, MESH_EDIT_GFX_OVERLAY)
 
     //
     // Draw knob rotation => Z motion key for:
@@ -746,7 +763,7 @@ void MarlinUI::clear_lcd() { } // Automatically cleared by Picture Loop
       }
     }
 
-  #endif // BABYSTEP_ZPROBE_GFX_OVERLAY || MESH_EDIT_GFX_OVERLAY
+  #endif // BABYSTEP_GFX_OVERLAY || MESH_EDIT_GFX_OVERLAY
 
 #endif // HAS_MARLINUI_MENU
 

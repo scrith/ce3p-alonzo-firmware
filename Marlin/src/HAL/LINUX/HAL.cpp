@@ -19,7 +19,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-
 #ifdef __PLAT_LINUX__
 
 #include "../../inc/MarlinConfig.h"

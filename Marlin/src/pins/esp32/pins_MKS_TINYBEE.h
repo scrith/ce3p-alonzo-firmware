@@ -56,9 +56,7 @@
 //
 // Enable I2S stepper stream
 //
-#ifndef I2S_STEPPER_STREAM
-  #define I2S_STEPPER_STREAM
-#endif
+#define I2S_STEPPER_STREAM
 #if ENABLED(I2S_STEPPER_STREAM)
   #define I2S_WS                              26
   #define I2S_BCK                             25
@@ -121,7 +119,7 @@
  *                ------                                 ------
  *  (BEEPER) 149 | 1  2 | 13 (BTN_ENC)    (SPI MISO) 19 | 1  2 | 18 (SPI SCK)
  *  (LCD_EN)  21 | 3  4 |  4 (LCD_RS)      (BTN_EN1) 14 | 3  4 |  5 (SPI CS)
- *  (LCD_D4)   0 | 5  6   16 (LCD_D5)      (BTN_EN2) 12 | 5  6   23 (SPI MOSI)
+ *  (LCD_D4)   0   5  6 | 16 (LCD_D5)      (BTN_EN2) 12   5  6 | 23 (SPI MOSI)
  *  (LCD_D6)  15 | 7  8 | 17 (LCD_D7)      (SPI_DET) 34 | 7  8 | RESET
  *           GND | 9 10 | 5V                        GND | 9 10 | 3.3V
  *                ------                                 ------
@@ -171,7 +169,7 @@
     #define DOGLCD_A0                EXP1_07_PIN
     #define LCD_RESET_PIN                     -1
   #elif ENABLED(FYSETC_MINI_12864_2_1)
-    // MKS_MINI_12864_V3, BTT_MINI_12864, FYSETC_MINI_12864_2_1
+    // MKS_MINI_12864_V3, BTT_MINI_12864_V1, FYSETC_MINI_12864_2_1
     #define DOGLCD_CS                EXP1_03_PIN
     #define DOGLCD_A0                EXP1_04_PIN
     #define LCD_RESET_PIN            EXP1_05_PIN

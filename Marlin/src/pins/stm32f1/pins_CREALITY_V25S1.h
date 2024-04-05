@@ -63,9 +63,6 @@
 #define Y_STOP_PIN                          PC5
 #define Z_STOP_PIN                          PC15
 
-//
-// Probe
-//
 #if ENABLED(BLTOUCH)
   #define SERVO0_PIN                        PC14  // BLTouch OUT PIN
 #elif ENABLED(PROBE_ACTIVATION_SWITCH)

@@ -134,8 +134,8 @@ static void IRAM_ATTR i2s_intr_handler_default(void *arg) {
 
   if (high_priority_task_awoken == pdTRUE) portYIELD_FROM_ISR();
 
-  // Clear pending interrupt
-  I2S0.int_clr.val = I2S0.int_st.val;
+  // clear interrupt
+  I2S0.int_clr.val = I2S0.int_st.val; //clear pending interrupt
 }
 
 void stepperTask(void *parameter) {

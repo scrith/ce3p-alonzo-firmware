@@ -234,6 +234,8 @@ bool load_filament(const_float_t slow_load_length/*=0*/, const_float_t fast_load
 
   TERN_(BELTPRINTER, do_blocking_move_to_xy(0.00, 50.00));
 
+  TERN_(MPCTEMP, MPC::e_paused = true);
+
   // Slow Load filament
   if (slow_load_length) unscaled_e_move(slow_load_length, FILAMENT_CHANGE_SLOW_LOAD_FEEDRATE);
 
@@ -297,6 +299,9 @@ bool load_filament(const_float_t slow_load_length/*=0*/, const_float_t fast_load
     } while (TERN0(M600_PURGE_MORE_RESUMABLE, pause_menu_response == PAUSE_RESPONSE_EXTRUDE_MORE));
 
   #endif
+
+  TERN_(MPCTEMP, MPC::e_paused = false);
+
   TERN_(HOST_PROMPT_SUPPORT, hostui.prompt_end());
 
   return true;
@@ -396,8 +401,6 @@ uint8_t did_pause_print = 0;
 bool pause_print(const_float_t retract, const xyz_pos_t &park_point, const bool show_lcd/*=false*/, const_float_t unload_length/*=0*/ DXC_ARGS) {
   DEBUG_SECTION(pp, "pause_print", true);
   DEBUG_ECHOLNPGM("... park.x:", park_point.x, " y:", park_point.y, " z:", park_point.z, " unloadlen:", unload_length, " showlcd:", show_lcd DXC_SAY);
-
-  UNUSED(show_lcd);
 
   if (did_pause_print) return false; // already paused
 
@@ -499,7 +502,7 @@ void show_continue_prompt(const bool is_reload) {
 
   ui.pause_show_message(is_reload ? PAUSE_MESSAGE_INSERT : PAUSE_MESSAGE_WAITING);
   SERIAL_ECHO_START();
-  SERIAL_ECHOF(is_reload ? F(_PMSG(STR_FILAMENT_CHANGE_INSERT) "\n") : F(_PMSG(STR_FILAMENT_CHANGE_WAIT) "\n"));
+  SERIAL_ECHO(is_reload ? F(_PMSG(STR_FILAMENT_CHANGE_INSERT) "\n") : F(_PMSG(STR_FILAMENT_CHANGE_WAIT) "\n"));
 }
 
 void wait_for_confirmation(const bool is_reload/*=false*/, const int8_t max_beep_count/*=0*/ DXC_ARGS) {
@@ -543,7 +546,11 @@ void wait_for_confirmation(const bool is_reload/*=false*/, const int8_t max_beep
 
       TERN_(HOST_PROMPT_SUPPORT, hostui.prompt_do(PROMPT_USER_CONTINUE, GET_TEXT_F(MSG_HEATER_TIMEOUT), GET_TEXT_F(MSG_REHEAT)));
 
-      TERN_(EXTENSIBLE_UI, ExtUI::onUserConfirmRequired(GET_TEXT_F(MSG_HEATER_TIMEOUT)));
+      #if ENABLED(TOUCH_UI_FTDI_EVE)
+        ExtUI::onUserConfirmRequired(GET_TEXT_F(MSG_FTDI_HEATER_TIMEOUT));
+      #elif ENABLED(EXTENSIBLE_UI)
+        ExtUI::onUserConfirmRequired(GET_TEXT_F(MSG_HEATER_TIMEOUT));
+      #endif
 
       TERN_(HAS_RESUME_CONTINUE, wait_for_user_response(0, true)); // Wait for LCD click or M108
 

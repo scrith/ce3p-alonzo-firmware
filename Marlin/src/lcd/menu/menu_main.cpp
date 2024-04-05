@@ -100,6 +100,10 @@ void menu_configuration();
   void menu_preheat_only();
 #endif
 
+#if ENABLED(HOTEND_IDLE_TIMEOUT)
+  void menu_hotend_idle();
+#endif
+
 #if HAS_MULTI_LANGUAGE
   void menu_language();
 #endif
@@ -292,7 +296,7 @@ void menu_main() {
               #if ENABLED(TFT_COLOR_UI)
                 // Menu display issue on item removal with multi language selection menu
                 if (encoderTopLine > 0) encoderTopLine--;
-                ui.refresh(LCDVIEW_CLEAR_CALL_REDRAW);
+                ui.refresh(LCDVIEW_CALL_REDRAW_NEXT);
               #endif
             });
           #endif
@@ -328,7 +332,7 @@ void menu_main() {
     SUBMENU(MSG_MOTION, menu_motion);
   }
 
-  #if ENABLED(ADVANCED_PAUSE_FEATURE) && (!HAS_ENCODER_WHEEL || ENABLED(DISABLE_ENCODER))
+  #if ALL(ADVANCED_PAUSE_FEATURE, DISABLE_ENCODER)
     FILAMENT_CHANGE_ITEM();
   #endif
 
@@ -409,7 +413,7 @@ void menu_main() {
             #if ENABLED(TFT_COLOR_UI)
               // Menu display issue on item removal with multi language selection menu
               if (encoderTopLine > 0) encoderTopLine--;
-              ui.refresh(LCDVIEW_CLEAR_CALL_REDRAW);
+              ui.refresh(LCDVIEW_CALL_REDRAW_NEXT);
             #endif
           });
         #endif
@@ -499,7 +503,7 @@ void menu_main() {
     });
   #endif
 
-  #if ENABLED(ADVANCED_PAUSE_FEATURE) && HAS_ENCODER_WHEEL && DISABLED(DISABLE_ENCODER)
+  #if ENABLED(ADVANCED_PAUSE_FEATURE) && DISABLED(DISABLE_ENCODER)
     FILAMENT_CHANGE_ITEM();
   #endif
 

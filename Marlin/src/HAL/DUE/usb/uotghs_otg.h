@@ -53,6 +53,7 @@
 extern "C" {
 #endif
 
+
 //! \ingroup usb_group
 //! \defgroup otg_group UOTGHS OTG Driver
 //! UOTGHS low-level driver for OTG features
@@ -72,6 +73,7 @@ bool otg_dual_enable(void);
  * This function is implemented in uotghs_host.c file.
  */
 void otg_dual_disable(void);
+
 
 //! @name UOTGHS OTG ID pin management
 //! The ID pin come from the USB OTG connector (A and B receptable) and

@@ -20,7 +20,7 @@
  *
  */
 
-#include "../inc/MarlinConfig.h"
+#include "../inc/MarlinConfigPre.h"
 
 #if NEED_HEX_PRINT
 
@@ -41,26 +41,28 @@ char* hex_byte(const uint8_t b) {
   return &_hex[byte_start + 4];
 }
 
-inline void __hex_word(const uint16_t w) {
+inline void _hex_word(const uint16_t w) {
   _hex[byte_start + 2] = hex_nybble(w >> 12);
   _hex[byte_start + 3] = hex_nybble(w >> 8);
   _hex[byte_start + 4] = hex_nybble(w >> 4);
   _hex[byte_start + 5] = hex_nybble(w);
 }
 
-char* _hex_word(const uint16_t w) {
-  __hex_word(w);
+char* hex_word(const uint16_t w) {
+  _hex_word(w);
   return &_hex[byte_start + 2];
 }
 
-char* _hex_long(const uintptr_t l) {
-  _hex[2] = hex_nybble(l >> 28);
-  _hex[3] = hex_nybble(l >> 24);
-  _hex[4] = hex_nybble(l >> 20);
-  _hex[5] = hex_nybble(l >> 16);
-  __hex_word((uint16_t)(l & 0xFFFF));
-  return &_hex[2];
-}
+#ifdef CPU_32_BIT
+  char* hex_long(const uintptr_t l) {
+    _hex[2] = hex_nybble(l >> 28);
+    _hex[3] = hex_nybble(l >> 24);
+    _hex[4] = hex_nybble(l >> 20);
+    _hex[5] = hex_nybble(l >> 16);
+    _hex_word((uint16_t)(l & 0xFFFF));
+    return &_hex[2];
+  }
+#endif
 
 char* hex_address(const void * const w) {
   #ifdef CPU_32_BIT
@@ -76,11 +78,11 @@ void print_hex_byte(const uint8_t b)         { SERIAL_ECHO(hex_byte(b));    }
 void print_hex_word(const uint16_t w)        { SERIAL_ECHO(hex_word(w));    }
 void print_hex_address(const void * const w) { SERIAL_ECHO(hex_address(w)); }
 
-void print_hex_long(const uint32_t w, const char delimiter/*='\0'*/) {
+void print_hex_long(const uint32_t w, const char delimiter) {
   SERIAL_ECHOPGM("0x");
   for (int B = 24; B >= 8; B -= 8) {
     print_hex_byte(w >> B);
-    if (delimiter) SERIAL_CHAR(delimiter);
+    SERIAL_CHAR(delimiter);
   }
   print_hex_byte(w);
 }

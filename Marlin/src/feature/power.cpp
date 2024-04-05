@@ -53,6 +53,10 @@ bool Power::psu_on;
     #include "controllerfan.h"
   #endif
 
+  #if ANY(LASER_FEATURE, SPINDLE_FEATURE)
+    #include "spindle_laser.h"
+  #endif
+
   millis_t Power::lastPowerOn;
 #endif
 
@@ -98,11 +102,11 @@ void Power::power_on() {
  * Processes any PSU_POWEROFF_GCODE and makes a PS_OFF_SOUND if enabled.
  */
 void Power::power_off() {
+  SERIAL_ECHOLNPGM(STR_POWEROFF);
+
   TERN_(HAS_SUICIDE, suicide());
 
   if (!psu_on) return;
-
-  SERIAL_ECHOLNPGM(STR_POWEROFF);
 
   #ifdef PSU_POWEROFF_GCODE
     gcode.process_subcommands_now(F(PSU_POWEROFF_GCODE));
@@ -194,6 +198,10 @@ void Power::power_off() {
 
     #if ALL(USE_CONTROLLER_FAN, AUTO_POWER_CONTROLLERFAN)
       if (controllerFan.state()) return true;
+    #endif
+
+    #if ANY(LASER_FEATURE, SPINDLE_FEATURE)
+      if (TERN0(AUTO_POWER_SPINDLE_LASER, cutter.enabled())) return true;
     #endif
 
     if (TERN0(AUTO_POWER_CHAMBER_FAN, thermalManager.chamberfan_speed))

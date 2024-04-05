@@ -59,7 +59,6 @@
  *       at https://reprap.org/wiki/Firmware_Capabilities_Protocol
  */
 void GcodeSuite::M115() {
-
   SERIAL_ECHOPGM("FIRMWARE_NAME:Marlin"
     " " DETAILED_BUILD_VERSION " (" __DATE__ " " __TIME__ ")"
     " SOURCE_CODE_URL:" SOURCE_CODE_URL
@@ -204,6 +203,9 @@ void GcodeSuite::M115() {
 
     // BABYSTEPPING (M290)
     cap_line(F("BABYSTEPPING"), ENABLED(BABYSTEPPING));
+
+    // EP_BABYSTEP (M293, M294)
+    cap_line(F("EP_BABYSTEP"), ENABLED(EP_BABYSTEPPING));
 
     // CHAMBER_TEMPERATURE (M141, M191)
     cap_line(F("CHAMBER_TEMPERATURE"), ENABLED(HAS_HEATED_CHAMBER));

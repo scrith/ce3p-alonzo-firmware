@@ -33,61 +33,15 @@
 
 #define _AXIS(A) (A##_AXIS)
 
-#define _XSTOP_  0x01
-#define _YSTOP_  0x02
-#define _ZSTOP_  0x03
-#define _ISTOP_  0x04
-#define _JSTOP_  0x05
-#define _KSTOP_  0x06
-#define _USTOP_  0x07
-#define _VSTOP_  0x08
-#define _WSTOP_  0x09
-#define _XMIN_   0x11
-#define _YMIN_   0x12
-#define _ZMIN_   0x13
-#define _IMIN_   0x14
-#define _JMIN_   0x15
-#define _KMIN_   0x16
-#define _UMIN_   0x17
-#define _VMIN_   0x18
-#define _WMIN_   0x19
-#define _XMAX_   0x21
-#define _YMAX_   0x22
-#define _ZMAX_   0x23
-#define _IMAX_   0x24
-#define _JMAX_   0x25
-#define _KMAX_   0x26
-#define _UMAX_   0x27
-#define _VMAX_   0x28
-#define _WMAX_   0x29
-#define _XDIAG_  0x31
-#define _YDIAG_  0x32
-#define _ZDIAG_  0x33
-#define _IDIAG_  0x34
-#define _JDIAG_  0x35
-#define _KDIAG_  0x36
-#define _UDIAG_  0x37
-#define _VDIAG_  0x38
-#define _WDIAG_  0x39
-#define _E0DIAG_ 0xE0
-#define _E1DIAG_ 0xE1
-#define _E2DIAG_ 0xE2
-#define _E3DIAG_ 0xE3
-#define _E4DIAG_ 0xE4
-#define _E5DIAG_ 0xE5
-#define _E6DIAG_ 0xE6
-#define _E7DIAG_ 0xE7
-
 #define _FORCE_INLINE_ __attribute__((__always_inline__)) __inline__
 #define  FORCE_INLINE  __attribute__((always_inline)) inline
 #define NO_INLINE      __attribute__((noinline))
 #define _UNUSED      __attribute__((unused))
-#define __O0         __attribute__((optimize("O0")))  // No optimization and less debug info
-#define __Og         __attribute__((optimize("Og")))  // Optimize the debugging experience
-#define __Os         __attribute__((optimize("Os")))  // Optimize for size
-#define __O1         __attribute__((optimize("O1")))  // Try to reduce size and cycles; nothing that takes a lot of time to compile
-#define __O2         __attribute__((optimize("O2")))  // Optimize even more
-#define __O3         __attribute__((optimize("O3")))  // Optimize yet more
+#define __O0         __attribute__((optimize("O0")))
+#define __Os         __attribute__((optimize("Os")))
+#define __O1         __attribute__((optimize("O1")))
+#define __O2         __attribute__((optimize("O2")))
+#define __O3         __attribute__((optimize("O3")))
 
 #define IS_CONSTEXPR(...) __builtin_constant_p(__VA_ARGS__) // Only valid solution with C++14. Should use std::is_constant_evaluated() in C++20 instead
 
@@ -224,25 +178,26 @@
 #define _DO_N(W,C,N,V...)  __DO_N(W,C,N,V)
 #define DO(W,C,V...)       (_DO_N(W,C,NUM_ARGS(V),V))
 
-// Concatenate symbol names, without or with pre-expansion
+// Macros to support option testing
 #define _CAT(a,V...) a##V
 #define CAT(a,V...) _CAT(a,V)
 
-// Recognize "true" values: blank, 1, 0x1, true
 #define _ISENA_     ~,1
 #define _ISENA_1    ~,1
 #define _ISENA_0x1  ~,1
 #define _ISENA_true ~,1
 #define _ISENA(V...)        IS_PROBE(V)
 
-// Macros to evaluate simple option switches
 #define _ENA_1(O)           _ISENA(CAT(_IS,CAT(ENA_, O)))
 #define _DIS_1(O)           NOT(_ENA_1(O))
 #define ENABLED(V...)       DO(ENA,&&,V)
 #define DISABLED(V...)      DO(DIS,&&,V)
+#define ANY(V...)          !DISABLED(V)
+#define ALL                 ENABLED
+#define NONE                DISABLED
 #define COUNT_ENABLED(V...) DO(ENA,+,V)
+#define MANY(V...)          (COUNT_ENABLED(V) > 1)
 
-// Ternary pre-compiler macros conceal non-emitted content from the compiler
 #define TERN(O,A,B)         _TERN(_ENA_1(O),B,A)    // OPTION ? 'A' : 'B'
 #define TERN0(O,A)          _TERN(_ENA_1(O),0,A)    // OPTION ? 'A' : '0'
 #define TERN1(O,A)          _TERN(_ENA_1(O),1,A)    // OPTION ? 'A' : '1'
@@ -251,7 +206,6 @@
 #define __TERN(T,V...)      ___TERN(_CAT(_NO,T),V)  // Prepend '_NO' to get '_NOT_0' or '_NOT_1'
 #define ___TERN(P,V...)     THIRD(P,V)              // If first argument has a comma, A. Else B.
 
-// Macros to conditionally emit array items and function arguments
 #define _OPTITEM(A...)      A,
 #define OPTITEM(O,A...)     TERN_(O,DEFER4(_OPTITEM)(A))
 #define _OPTARG(A...)       , A
@@ -259,26 +213,14 @@
 #define _OPTCODE(A)         A;
 #define OPTCODE(O,A)        TERN_(O,DEFER4(_OPTCODE)(A))
 
-// Macros to avoid operations that aren't always optimized away (e.g., 'f + 0.0' and 'f * 1.0').
+// Macros to avoid 'f + 0.0' which is not always optimized away. Minus included for symmetry.
 // Compiler flags -fno-signed-zeros -ffinite-math-only also cover 'f * 1.0', 'f - f', etc.
 #define PLUS_TERN0(O,A)     _TERN(_ENA_1(O),,+ (A)) // OPTION ? '+ (A)' : '<nul>'
 #define MINUS_TERN0(O,A)    _TERN(_ENA_1(O),,- (A)) // OPTION ? '- (A)' : '<nul>'
-#define MUL_TERN1(O,A)      _TERN(_ENA_1(O),,* (A)) // OPTION ? '* (A)' : '<nul>'
-#define DIV_TERN1(O,A)      _TERN(_ENA_1(O),,/ (A)) // OPTION ? '/ (A)' : '<nul>'
 #define SUM_TERN(O,B,A)     ((B) PLUS_TERN0(O,A))   // ((B) (OPTION ? '+ (A)' : '<nul>'))
 #define DIFF_TERN(O,B,A)    ((B) MINUS_TERN0(O,A))  // ((B) (OPTION ? '- (A)' : '<nul>'))
-#define MUL_TERN(O,B,A)     ((B) MUL_TERN1(O,A))    // ((B) (OPTION ? '* (A)' : '<nul>'))
-#define DIV_TERN(O,B,A)     ((B) DIV_TERN1(O,A))    // ((B) (OPTION ? '/ (A)' : '<nul>'))
 
-#define IF_ENABLED          TERN_
 #define IF_DISABLED(O,A)    TERN(O,,A)
-
-#define ANY(V...)          !DISABLED(V)
-#define NONE(V...)          DISABLED(V)
-#define ALL(V...)           ENABLED(V)
-#define BOTH(V1,V2)         ALL(V1,V2)
-#define EITHER(V1,V2)       ANY(V1,V2)
-#define MANY(V...)          (COUNT_ENABLED(V) > 1)
 
 // Macros to support pins/buttons exist testing
 #define PIN_EXISTS(PN)      (defined(PN##_PIN) && PN##_PIN >= 0)
@@ -291,7 +233,6 @@
 #define BUTTONS_EXIST(V...) DO(BTNEX,&&,V)
 #define ANY_BUTTON(V...)    DO(BTNEX,||,V)
 
-// Value helper macros
 #define WITHIN(N,L,H)       ((N) >= (L) && (N) <= (H))
 #define ISEOL(C)            ((C) == '\n' || (C) == '\r')
 #define NUMERIC(a)          WITHIN(a, '0', '9')
@@ -299,8 +240,6 @@
 #define HEXCHR(a)           (NUMERIC(a) ? (a) - '0' : WITHIN(a, 'a', 'f') ? ((a) - 'a' + 10)  : WITHIN(a, 'A', 'F') ? ((a) - 'A' + 10) : -1)
 #define NUMERIC_SIGNED(a)   (NUMERIC(a) || (a) == '-' || (a) == '+')
 #define DECIMAL_SIGNED(a)   (DECIMAL(a) || (a) == '-' || (a) == '+')
-
-// Array shorthand
 #define COUNT(a)            (sizeof(a)/sizeof(*a))
 #define ZERO(a)             memset((void*)a,0,sizeof(a))
 #define COPY(a,b) do{ \
@@ -308,7 +247,6 @@
     memcpy(&a[0],&b[0],_MIN(sizeof(a),sizeof(b))); \
   }while(0)
 
-// Expansion of some code
 #define CODE_16( A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,...) A; B; C; D; E; F; G; H; I; J; K; L; M; N; O; P
 #define CODE_15( A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,...) A; B; C; D; E; F; G; H; I; J; K; L; M; N; O
 #define CODE_14( A,B,C,D,E,F,G,H,I,J,K,L,M,N,...) A; B; C; D; E; F; G; H; I; J; K; L; M; N
@@ -329,7 +267,6 @@
 #define _CODE_N(N,V...) CODE_##N(V)
 #define CODE_N(N,V...) _CODE_N(N,V)
 
-// Expansion of some non-delimited content
 #define GANG_16(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,...) A B C D E F G H I J K L M N O P
 #define GANG_15(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,...) A B C D E F G H I J K L M N O
 #define GANG_14(A,B,C,D,E,F,G,H,I,J,K,L,M,N,...) A B C D E F G H I J K L M N
@@ -351,7 +288,7 @@
 #define GANG_N(N,V...) _GANG_N(N,V)
 #define GANG_N_1(N,K) _GANG_N(N,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K)
 
-// Expansion of some list items
+// Macros for initializing arrays
 #define LIST_26(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,...) A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z
 #define LIST_25(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,...) A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y
 #define LIST_24(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,...) A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X
@@ -803,3 +740,14 @@
 #define _HAS_E_TEMP(N) || TEMP_SENSOR(N)
 #define HAS_E_TEMP_SENSOR (0 REPEAT(EXTRUDERS, _HAS_E_TEMP))
 #define TEMP_SENSOR_IS_MAX_TC(T) (TEMP_SENSOR(T) == -5 || TEMP_SENSOR(T) == -3 || TEMP_SENSOR(T) == -2)
+
+#define _UI_NONE          0
+#define _UI_ORIGIN      101
+#define _UI_FYSETC      102
+#define _UI_HIPRECY     103
+#define _UI_MKS         104
+#define _UI_RELOADED    105
+#define _UI_IA_CREALITY 106
+#define _UI_E3S1PRO     107
+#define _DGUS_UI_IS(N) || (CAT(_UI_, DGUS_LCD_UI) == CAT(_UI_, N))
+#define DGUS_UI_IS(V...) (0 MAP(_DGUS_UI_IS, V))

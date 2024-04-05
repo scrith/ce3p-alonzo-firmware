@@ -31,10 +31,7 @@ extern const char M23_STR[], M24_STR[];
   #if ENABLED(SDSORT_DYNAMIC_RAM)
     #define SD_RESORT 1
   #endif
-  #ifndef SDSORT_FOLDERS
-    #define SDSORT_FOLDERS 0
-  #endif
-  #if SDSORT_FOLDERS || ENABLED(SDSORT_GCODE)
+  #if FOLDER_SORTING || ENABLED(SDSORT_GCODE)
     #define HAS_FOLDER_SORTING 1
   #endif
 #endif
@@ -87,7 +84,6 @@ typedef struct {
 } card_flags_t;
 
 enum ListingFlags : uint8_t { LS_LONG_FILENAME, LS_ONLY_BIN, LS_TIMESTAMP };
-enum SortFlag : int8_t { AS_REV = -1, AS_OFF, AS_FWD, AS_ALSO_REV };
 
 #if ENABLED(AUTO_REPORT_SD_STATUS)
   #include "../libs/autoreport.h"
@@ -132,6 +128,12 @@ public:
     static void autofile_cancel() { autofile_index = 0; }
   #endif
 
+  #if ENABLED(ONE_CLICK_PRINT)
+    static bool one_click_check();  // Check for the newest file and prompt to run it.
+    static void diveToNewestFile(MediaFile parent, uint32_t &compareDateTime, MediaFile &outdir, char * const outname);
+    static bool selectNewestFile();
+  #endif
+
   // Basic file ops
   static void openFileRead(const char * const path, const uint8_t subcall=0);
   static void openFileWrite(const char * const path);
@@ -142,6 +144,7 @@ public:
   static char* longest_filename() { return longFilename[0] ? longFilename : filename; }
   #if ENABLED(LONG_FILENAME_HOST_SUPPORT)
     static void printLongPath(char * const path);   // Used by M33
+    static void getLongPath(char * const pathLong, char * const pathShort); // Used by anycubic_vyper
   #endif
 
   // Working Directory for SD card menu
@@ -196,8 +199,8 @@ public:
     static void presort();
     static void selectFileByIndexSorted(const int16_t nr);
     #if ENABLED(SDSORT_GCODE)
-      FORCE_INLINE static void setSortOn(const SortFlag f) { sort_alpha = (f == AS_ALSO_REV) ? AS_REV : f; presort(); }
-      FORCE_INLINE static void setSortFolders(const int8_t i) { sort_folders = i; presort(); }
+      FORCE_INLINE static void setSortOn(bool b)        { sort_alpha   = b; presort(); }
+      FORCE_INLINE static void setSortFolders(int i)    { sort_folders = i; presort(); }
       //FORCE_INLINE static void setSortReverse(bool b) { sort_reverse = b; }
     #endif
   #else
@@ -269,12 +272,12 @@ private:
   #if ENABLED(SDCARD_SORT_ALPHA)
     static int16_t sort_count;    // Count of sorted items in the current directory
     #if ENABLED(SDSORT_GCODE)
-      static SortFlag sort_alpha; // Sorting: REV, OFF, FWD
-      static int8_t sort_folders; // Folder sorting before/none/after
+      static bool sort_alpha;     // Flag to enable / disable the feature
+      static int sort_folders;    // Folder sorting before/none/after
       //static bool sort_reverse; // Flag to enable / disable reverse sorting
     #endif
 
-    // By default the sort index is statically allocated
+    // By default the sort index is static
     #if ENABLED(SDSORT_DYNAMIC_RAM)
       static uint8_t *sort_order;
     #else

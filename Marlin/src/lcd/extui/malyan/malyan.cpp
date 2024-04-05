@@ -106,6 +106,7 @@ void set_lcd_error(FSTR_P const error, FSTR_P const component/*=nullptr*/) {
   write_to_lcd(F("}"));
 }
 
+
 /**
  * Process an LCD 'C' command.
  * These are currently all temperature commands

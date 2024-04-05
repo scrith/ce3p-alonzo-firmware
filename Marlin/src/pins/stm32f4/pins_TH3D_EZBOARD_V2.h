@@ -45,7 +45,7 @@
 #endif
 
 //
-// NeoPixel
+// Neopixels
 //
 #define NEOPIXEL_PIN                        PA8
 

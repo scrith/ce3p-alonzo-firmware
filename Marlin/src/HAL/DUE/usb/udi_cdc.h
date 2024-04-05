@@ -106,6 +106,7 @@ typedef struct {
   usb_ep_desc_t ep_notify;
 } udi_cdc_comm_desc_t;
 
+
 /**
  * \brief Data Class interface descriptor
  *
@@ -119,6 +120,7 @@ typedef struct {
   usb_ep_desc_t ep_in;
   usb_ep_desc_t ep_out;
 } udi_cdc_data_desc_t;
+
 
 //! CDC communication endpoints size for all speeds
 #define UDI_CDC_COMM_EP_SIZE        64

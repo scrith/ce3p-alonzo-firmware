@@ -47,6 +47,7 @@
 #ifndef _USB_PROTOCOL_MSC_H_
 #define _USB_PROTOCOL_MSC_H_
 
+
 /**
  * \ingroup usb_protocol_group
  * \defgroup usb_msc_protocol USB Mass Storage Class (MSC) protocol definitions
@@ -88,6 +89,7 @@
 #define MSC_PROTOCOL_BULK           0x50  //!< Bulk-only
 //@}
 
+
 /**
  * \brief MSC USB requests (bRequest)
  */
@@ -95,6 +97,7 @@ enum usb_reqid_msc {
   USB_REQ_MSC_BULK_RESET = 0xFF,  //!< Mass Storage Reset
   USB_REQ_MSC_GET_MAX_LUN = 0xFE  //!< Get Max LUN
 };
+
 
 COMPILER_PACK_SET(1)
 
@@ -118,6 +121,7 @@ struct usb_msc_cbw {
 #define USB_CBW_LUN_MASK            0x0F  //!< Valid bits in bCBWLUN
 #define USB_CBW_LEN_MASK            0x1F  //!< Valid bits in bCBWCBLength
 //@}
+
 
 /**
  * \name A Command Status Wrapper (CSW).

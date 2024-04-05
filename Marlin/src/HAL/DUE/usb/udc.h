@@ -685,4 +685,6 @@ usb_iface_desc_t UDC_DESC_STORAGE *udc_get_interface_desc(void);
    } \endcode
  */
 
+
+
 #endif // _UDC_H_

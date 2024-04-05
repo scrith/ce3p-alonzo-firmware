@@ -108,7 +108,7 @@ namespace ExtUI {
   }
   void onSettingsLoaded(const bool) {}
 
-  void onPlayTone(const uint16_t frequency, const uint16_t duration/*=0*/) { sound.play_tone(frequency, duration); }
+  void onPlayTone(const uint16_t frequency, const uint16_t duration) { sound.play_tone(frequency, duration); }
 
   void onUserConfirmRequired(const char * const msg) {
     if (msg)
@@ -147,8 +147,8 @@ namespace ExtUI {
         case PID_STARTED:
           StatusScreen::setStatusMessage(GET_TEXT_F(MSG_PID_AUTOTUNE));
           break;
-        case PID_BAD_EXTRUDER_NUM:
-          StatusScreen::setStatusMessage(GET_TEXT_F(MSG_PID_BAD_EXTRUDER_NUM));
+        case PID_BAD_HEATER_ID:
+          StatusScreen::setStatusMessage(GET_TEXT_F(MSG_PID_BAD_HEATER_ID));
           break;
         case PID_TEMP_TOO_HIGH:
           StatusScreen::setStatusMessage(GET_TEXT_F(MSG_PID_TEMP_TOO_HIGH));

@@ -103,7 +103,23 @@
 
 #elif ENABLED(YHCB2004)
 
-  LCD_CLASS lcd(YHCB2004_SCK_PIN, 20, 4, YHCB2004_MOSI_PIN, YHCB2004_MISO_PIN); // CLK, cols, rows, MOSI, MISO
+  #ifndef YHCB2004_SS_PIN
+    #define YHCB2004_SS_PIN   SS
+  #endif
+  #ifndef YHCB2004_SCK_PIN
+    #define YHCB2004_SCK_PIN  SCK
+  #endif
+  #ifndef YHCB2004_MOSI_PIN
+    #define YHCB2004_MOSI_PIN MOSI
+  #endif
+  #ifndef YHCB2004_MISO_PIN
+    #define YHCB2004_MISO_PIN MISO
+  #endif
+  #if !PINS_EXIST(YHCB2004_SS, YHCB2004_SCK, YHCB2004_MOSI, YHCB2004_MISO)
+    #error "YHCB2004 display requires YHCB2004_SS_PIN, YHCB2004_SCK_PIN, YHCB2004_MOSI_PIN, and YHCB2004_MISO_PIN."
+  #endif
+
+  LCD_CLASS lcd(YHCB2004_SS_PIN, 20, 4, YHCB2004_SCK_PIN, YHCB2004_MOSI_PIN, YHCB2004_MISO_PIN); // SS, cols, rows, SCK, MOSI, MISO
 
 #else
 
@@ -715,7 +731,7 @@ void MarlinUI::draw_status_message(const bool blink) {
     static bool last_blink = false;
 
     // Get the UTF8 character count of the string
-    uint8_t slen = utf8_strlen(status_message);
+    uint8_t slen = status_message.glyphs();
 
     // If the string fits into the LCD, just print it and do not scroll it
     if (slen <= LCD_WIDTH) {
@@ -757,7 +773,7 @@ void MarlinUI::draw_status_message(const bool blink) {
     UNUSED(blink);
 
     // Get the UTF8 character count of the string
-    uint8_t slen = utf8_strlen(status_message);
+    uint8_t slen = status_message.glyphs();
 
     // Just print the string to the LCD
     lcd_put_u8str_max(status_message, LCD_WIDTH);
@@ -1149,17 +1165,38 @@ void MarlinUI::draw_status_screen() {
   #endif // ADVANCED_PAUSE_FEATURE
 
   // Draw a static item with no left-right margin required. Centered by default.
-  void MenuItem_static::draw(const uint8_t row, FSTR_P const fstr, const uint8_t style/*=SS_DEFAULT*/, const char * const vstr/*=nullptr*/) {
-    int8_t n = LCD_WIDTH;
+  void MenuItem_static::draw(const uint8_t row, FSTR_P const fstr, const uint8_t style/*=SS_DEFAULT*/, const char *vstr/*=nullptr*/) {
     lcd_moveto(0, row);
+
+    int8_t n = LCD_WIDTH;
+    const bool center = bool(style & SS_CENTER), full = bool(style & SS_FULL);
     const int8_t plen = fstr ? utf8_strlen(fstr) : 0,
                  vlen = vstr ? utf8_strlen(vstr) : 0;
-    if (style & SS_CENTER) {
-      int8_t pad = (LCD_WIDTH - plen - vlen) / 2;
-      while (--pad >= 0) { lcd_put_u8str(F(" ")); n--; }
+    int8_t pad = (center || full) ? n - plen - vlen : 0;
+
+    // SS_CENTER: Pad with half of the unused space first
+    if (center) for (int8_t lpad = pad / 2; lpad > 0; --lpad) { lcd_put_u8str(F(" ")); n--; }
+
+    // Draw as much of the label as fits
+    if (plen) {
+      const int8_t expl = n;
+      n = lcd_put_u8str(fstr, itemIndex, itemStringC, itemStringF, n);
+      pad -= (expl - n - plen); // Reduce the padding
     }
-    if (plen) n = lcd_put_u8str(fstr, itemIndex, itemStringC, itemStringF, n);
-    if (vlen) n -= lcd_put_u8str_max(vstr, n);
+
+    if (vlen && n > 0) {
+      // SS_FULL: Pad with enough space to justify the value
+      if (full && !center) {
+        // Move the leading colon from the value to the label
+        if (*vstr == ':') { n -= lcd_put_u8str(F(":")); vstr++; }
+        // Move spaces to the padding
+        while (*vstr == ' ') { vstr++; pad++; }
+        // Pad in-between
+        for (; pad > 0; --pad) { lcd_put_u8str(F(" ")); n--; }
+      }
+      n -= lcd_put_u8str_max(vstr, n);
+    }
+
     for (; n > 0; --n) lcd_put_u8str(F(" "));
   }
 
@@ -1175,7 +1212,8 @@ void MarlinUI::draw_status_screen() {
   void MenuEditItemBase::draw(const bool sel, const uint8_t row, FSTR_P const ftpl, const char * const inStr, const bool pgm) {
     const uint8_t vlen = inStr ? (pgm ? utf8_strlen_P(inStr) : utf8_strlen(inStr)) : 0;
     lcd_put_lchar(0, row, sel ? LCD_STR_ARROW_RIGHT[0] : ' ');
-    uint8_t n = lcd_put_u8str(ftpl, itemIndex, itemStringC, itemStringF, LCD_WIDTH - 2 - vlen);
+    uint8_t n = LCD_WIDTH - 2 - vlen;
+    n -= lcd_put_u8str(ftpl, itemIndex, itemStringC, itemStringF, n);
     if (vlen) {
       lcd_put_u8str(F(":"));
       for (; n; --n) lcd_put_u8str(F(" "));

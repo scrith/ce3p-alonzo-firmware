@@ -1,9 +1,10 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
- * Based on Sprinter and grbl.
- * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
+ * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2016 Bob Cousins bobcousins42@googlemail.com
+ * Copyright (c) 2015-2016 Nico Tonnhofer wurstnase.reprap@gmail.com
+ * Copyright (c) 2017 Victor Perez
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +28,7 @@
 #include "../shared/Marduino.h"
 #include "../shared/math_32bit.h"
 #include "../shared/HAL_SPI.h"
+#include "temp_soc.h"
 #include "fastio.h"
 #include "Servo.h"
 #include "MarlinSerial.h"
@@ -137,7 +139,11 @@
 
 typedef double isr_float_t;   // FPU ops are used for single-precision, so use double for ISRs.
 
-typedef int32_t pin_t;        // Parity with platform/ststm32
+#if defined(STM32G0B1xx) || defined(STM32H7xx)
+  typedef int32_t pin_t;
+#else
+  typedef int16_t pin_t;
+#endif
 
 class libServo;
 typedef libServo hal_servo_t;

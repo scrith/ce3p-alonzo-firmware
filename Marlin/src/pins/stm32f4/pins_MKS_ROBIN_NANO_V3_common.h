@@ -278,7 +278,6 @@
 //
 // LCD / Controller
 //
-
 #if ANY(TFT_COLOR_UI, TFT_LVGL_UI, TFT_CLASSIC_UI)
   #define TFT_CS_PIN                 EXP1_07_PIN
   #define TFT_SCK_PIN                EXP2_02_PIN
@@ -360,7 +359,7 @@
     #endif
     //#define LCD_SCREEN_ROTATE              180  // 0, 90, 180, 270
 
-  #else // !MKS_MINI_12864
+  #else                                           // !MKS_MINI_12864
 
     #define LCD_PINS_D4              EXP1_05_PIN
     #if IS_ULTIPANEL

@@ -38,6 +38,8 @@
   #error "Thermal Runaway Protection for hotends is now enabled with THERMAL_PROTECTION_HOTENDS."
 #elif DISABLED(THERMAL_PROTECTION_BED) && defined(THERMAL_PROTECTION_BED_PERIOD)
   #error "Thermal Runaway Protection for the bed is now enabled with THERMAL_PROTECTION_BED."
+#elif defined(NO_FAN_SLOWING_IN_PID_TUNING)
+  #error "NO_FAN_SLOWING_IN_PID_TUNING is now TEMP_TUNING_MAINTAIN_FAN."
 #elif (CORE_IS_XZ || CORE_IS_YZ) && ENABLED(Z_LATE_ENABLE)
   #error "Z_LATE_ENABLE can't be used with COREXZ, COREZX, COREYZ, or COREZY."
 #elif defined(X_HOME_RETRACT_MM)
@@ -63,7 +65,7 @@
 #elif defined(ENDSTOPPULLUP_FIL_RUNOUT)
   #error "ENDSTOPPULLUP_FIL_RUNOUT is now FIL_RUNOUT_PULLUP."
 #elif defined(DISABLE_MAX_ENDSTOPS) || defined(DISABLE_MIN_ENDSTOPS)
-  #error "DISABLE_MAX_ENDSTOPS and DISABLE_MIN_ENDSTOPS deprecated. Use individual USE_*_PLUG options instead."
+  #error "DISABLE_MAX_ENDSTOPS and DISABLE_MIN_ENDSTOPS deprecated. Endstops are automatically determined."
 #elif defined(LANGUAGE_INCLUDE)
   #error "LANGUAGE_INCLUDE has been replaced by LCD_LANGUAGE."
 #elif defined(EXTRUDER_OFFSET_X) || defined(EXTRUDER_OFFSET_Y)
@@ -153,9 +155,11 @@
 #elif defined(PID_ADD_EXTRUSION_RATE)
   #error "PID_ADD_EXTRUSION_RATE is now PID_EXTRUSION_SCALING and is DISABLED by default."
 #elif defined(Z_RAISE_BEFORE_HOMING)
-  #error "Z_RAISE_BEFORE_HOMING is now Z_HOMING_HEIGHT."
+  #error "Z_RAISE_BEFORE_HOMING is now Z_CLEARANCE_FOR_HOMING."
 #elif defined(MIN_Z_HEIGHT_FOR_HOMING)
-  #error "MIN_Z_HEIGHT_FOR_HOMING is now Z_HOMING_HEIGHT."
+  #error "MIN_Z_HEIGHT_FOR_HOMING is now Z_CLEARANCE_FOR_HOMING."
+#elif defined(Z_HOMING_HEIGHT)
+  #error "Z_HOMING_HEIGHT is now Z_CLEARANCE_FOR_HOMING."
 #elif defined(Z_RAISE_BEFORE_PROBING) || defined(Z_RAISE_AFTER_PROBING)
   #error "Z_RAISE_(BEFORE|AFTER)_PROBING are deprecated. Use Z_CLEARANCE_DEPLOY_PROBE and Z_AFTER_PROBING instead."
 #elif defined(Z_RAISE_PROBE_DEPLOY_STOW) || defined(Z_RAISE_BETWEEN_PROBINGS)
@@ -214,8 +218,6 @@
   #error "LCD_PIN_RESET is now LCD_RESET_PIN."
 #elif defined(EXTRUDER_0_AUTO_FAN_PIN) || defined(EXTRUDER_1_AUTO_FAN_PIN) || defined(EXTRUDER_2_AUTO_FAN_PIN) || defined(EXTRUDER_3_AUTO_FAN_PIN)
   #error "EXTRUDER_[0123]_AUTO_FAN_PIN is now E[0123]_AUTO_FAN_PIN."
-#elif defined(PID_FAN_SCALING) && !HAS_FAN
-  #error "PID_FAN_SCALING needs at least one fan enabled."
 #elif defined(min_software_endstops) || defined(max_software_endstops)
   #error "(min|max)_software_endstops are now (MIN|MAX)_SOFTWARE_ENDSTOPS."
 #elif ENABLED(Z_PROBE_SLED) && defined(SLED_PIN)
@@ -599,12 +601,40 @@
   #error "EXTRA_LIN_ADVANCE_K is now ADVANCE_K_EXTRA."
 #elif defined(POLAR_SEGMENTS_PER_SECOND) || defined(DELTA_SEGMENTS_PER_SECOND)  || defined(SCARA_SEGMENTS_PER_SECOND) || defined(TPARA_SEGMENTS_PER_SECOND)
   #error "(POLAR|DELTA|SCARA|TPARA)_SEGMENTS_PER_SECOND is now DEFAULT_SEGMENTS_PER_SECOND."
+#elif defined(TMC_SW_MOSI) || defined(TMC_SW_MISO) || defined(TMC_SW_SCK)
+  #error "TMC_SW_(MOSI|MISO|SCK) is now TMC_SPI_(MOSI|MISO|SCK)."
+#elif ANY(DGUS_LCD_UI_ORIGIN, DGUS_LCD_UI_FYSETC, DGUS_LCD_UI_HIPRECY, DGUS_LCD_UI_MKS, DGUS_LCD_UI_RELOADED) && !defined(DGUS_LCD_UI)
+  #error "DGUS_LCD_UI_[TYPE] is now set using DGUS_LCD_UI TYPE."
+#elif defined(DELTA_PRINTABLE_RADIUS)
+  #error "DELTA_PRINTABLE_RADIUS is now PRINTABLE_RADIUS."
+#elif defined(SCARA_PRINTABLE_RADIUS)
+  #error "SCARA_PRINTABLE_RADIUS is now PRINTABLE_RADIUS."
+#elif defined(SCARA_FEEDRATE_SCALING)
+  #error "SCARA_FEEDRATE_SCALING is now FEEDRATE_SCALING."
+#elif defined(MILLISECONDS_PREHEAT_TIME)
+  #error "MILLISECONDS_PREHEAT_TIME is now PREHEAT_TIME_HOTEND_MS."
 #elif defined(EXPERIMENTAL_SCURVE)
   #error "EXPERIMENTAL_SCURVE is no longer needed and should be removed."
+#elif defined(BABYSTEP_ZPROBE_GFX_OVERLAY)
+  #error "BABYSTEP_ZPROBE_GFX_OVERLAY is now BABYSTEP_GFX_OVERLAY."
 #elif defined(DISABLE_INACTIVE_EXTRUDER)
   #error "DISABLE_INACTIVE_EXTRUDER is now DISABLE_OTHER_EXTRUDERS."
+#elif defined(INVERT_X_STEP_PIN) || defined(INVERT_Y_STEP_PIN) || defined(INVERT_Z_STEP_PIN) || defined(INVERT_I_STEP_PIN) || defined(INVERT_J_STEP_PIN) || defined(INVERT_K_STEP_PIN) || defined(INVERT_U_STEP_PIN) || defined(INVERT_V_STEP_PIN) || defined(INVERT_W_STEP_PIN) || defined(INVERT_E_STEP_PIN)
+  #error "INVERT_*_STEP_PIN true is now STEP_STATE_* LOW, and INVERT_*_STEP_PIN false is now STEP_STATE_* HIGH."
+#elif defined(PROBE_PT_1_X) || defined(PROBE_PT_1_Y) || defined(PROBE_PT_2_X) || defined(PROBE_PT_2_Y) || defined(PROBE_PT_3_X) || defined(PROBE_PT_3_Y)
+  #error "PROBE_PT_[123]_[XY] is now defined using PROBE_PT_[123] with an array { x, y }."
+#elif defined(SQUARE_WAVE_STEPPING)
+  #error "SQUARE_WAVE_STEPPING is now EDGE_STEPPING."
 #elif defined(FAN_PIN)
   #error "FAN_PIN is now FAN0_PIN."
+#elif defined(X_MIN_ENDSTOP_INVERTING) || defined(Y_MIN_ENDSTOP_INVERTING) || defined(Z_MIN_ENDSTOP_INVERTING) \
+   || defined(I_MIN_ENDSTOP_INVERTING) || defined(J_MIN_ENDSTOP_INVERTING) || defined(K_MIN_ENDSTOP_INVERTING) \
+   || defined(U_MIN_ENDSTOP_INVERTING) || defined(V_MIN_ENDSTOP_INVERTING) || defined(W_MIN_ENDSTOP_INVERTING) \
+   || defined(X_MAX_ENDSTOP_INVERTING) || defined(Y_MAX_ENDSTOP_INVERTING) || defined(Z_MAX_ENDSTOP_INVERTING) \
+   || defined(I_MAX_ENDSTOP_INVERTING) || defined(J_MAX_ENDSTOP_INVERTING) || defined(K_MAX_ENDSTOP_INVERTING) \
+   || defined(U_MAX_ENDSTOP_INVERTING) || defined(V_MAX_ENDSTOP_INVERTING) || defined(W_MAX_ENDSTOP_INVERTING) \
+   || defined(Z_MIN_PROBE_ENDSTOP_INVERTING)
+  #error "*_ENDSTOP_INVERTING false/true is now set with *_ENDSTOP_HIT_STATE HIGH/LOW."
 #elif defined(DISABLE_INACTIVE_X) || defined(DISABLE_INACTIVE_Y) || defined(DISABLE_INACTIVE_Z) \
    || defined(DISABLE_INACTIVE_I) || defined(DISABLE_INACTIVE_J) || defined(DISABLE_INACTIVE_K) \
    || defined(DISABLE_INACTIVE_U) || defined(DISABLE_INACTIVE_V) || defined(DISABLE_INACTIVE_W) || defined(DISABLE_INACTIVE_E)
@@ -615,12 +645,22 @@
   #error "TFT_SHARED_SPI is now TFT_SHARED_IO."
 #elif defined(LCD_PINS_ENABLE)
   #error "LCD_PINS_ENABLE is now LCD_PINS_EN."
-#elif defined(FOLDER_SORTING)
-  #error "FOLDER_SORTING is now SDSORT_FOLDERS."
-#elif defined(BTT_MINI_12864_V1)
-  #error "BTT_MINI_12864_V1 is now BTT_MINI_12864."
-#elif defined(SDIO_SUPPORT)
-  #error "SDIO_SUPPORT is now ONBOARD_SDIO."
+#elif ANY(USE_XMIN_PLUG, USE_XMAX_PLUG, USE_YMIN_PLUG, USE_YMAX_PLUG, USE_ZMIN_PLUG, USE_ZMAX_PLUG, \
+          USE_IMIN_PLUG, USE_IMAX_PLUG, USE_JMIN_PLUG, USE_JMAX_PLUG, USE_KMIN_PLUG, USE_KMAX_PLUG, \
+          USE_UMIN_PLUG, USE_UMAX_PLUG, USE_VMIN_PLUG, USE_VMAX_PLUG, USE_WMIN_PLUG, USE_WMAX_PLUG)
+  #error "USE_*_PLUG settings are no longer needed and should be removed."
+#elif defined(X2_USE_ENDSTOP)
+  #error "X2_USE_ENDSTOP is obsolete. Instead set X2_STOP_PIN directly. (e.g., 'X2_USE_ENDSTOP _XMAX_' becomes 'X2_STOP_PIN X_MAX_PIN')"
+#elif defined(Y2_USE_ENDSTOP)
+  #error "Y2_USE_ENDSTOP is obsolete. Instead set Y2_STOP_PIN directly. (e.g., 'Y2_USE_ENDSTOP _YMAX_' becomes 'Y2_STOP_PIN Y_MAX_PIN')"
+#elif defined(Z2_USE_ENDSTOP)
+  #error "Z2_USE_ENDSTOP is obsolete. Instead set Z2_STOP_PIN directly. (e.g., 'Z2_USE_ENDSTOP _ZMAX_' becomes 'Z2_STOP_PIN Z_MAX_PIN')"
+#elif defined(Z3_USE_ENDSTOP)
+  #error "Z3_USE_ENDSTOP is obsolete. Instead set Z2_STOP_PIN directly. (e.g., 'Z3_USE_ENDSTOP _ZMAX_' becomes 'Z3_STOP_PIN Z_MAX_PIN')"
+#elif defined(Z4_USE_ENDSTOP)
+  #error "Z4_USE_ENDSTOP is obsolete. Instead set Z4_STOP_PIN directly. (e.g., 'Z4_USE_ENDSTOP _ZMAX_' becomes 'Z4_STOP_PIN Z_MAX_PIN')"
+#elif defined(INTEGRATED_BABYSTEPPING)
+  #error "INTEGRATED_BABYSTEPPING is no longer needed and should be removed."
 #endif
 
 // L64xx stepper drivers have been removed

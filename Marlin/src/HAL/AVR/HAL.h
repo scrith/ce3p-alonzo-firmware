@@ -1,9 +1,7 @@
 /**
  * Marlin 3D Printer Firmware
  * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
- *
- * Based on Sprinter and grbl.
- * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
+ * Copyright (c) 2016 Bob Cousins bobcousins42@googlemail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -189,7 +187,7 @@ class MarlinHAL {
 public:
 
   // Earliest possible init, before setup()
-  MarlinHAL() {}
+  MarlinHAL();
 
   // Watchdog
   static void watchdog_init()    IF_DISABLED(USE_WATCHDOG, {});
