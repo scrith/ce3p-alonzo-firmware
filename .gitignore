@@ -102,6 +102,7 @@ applet/
 
 # PlatformIO files/dirs
 .pio*
+!.pio/build/STM32G0B1RE_btt/firmware.bin
 .pioenvs
 .piolibdeps
 .clang_complete
