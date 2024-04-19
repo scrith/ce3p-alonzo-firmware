@@ -1295,7 +1295,6 @@ static void print2u(const uint8_t v) {
  * \param[in] fatDate The date field from a directory entry.
  */
 
-
 /**
  * %Print a directory date field.
  *
@@ -1311,7 +1310,6 @@ void SdBaseFile::printFatDate(const uint16_t fatDate) {
   SERIAL_CHAR('-');
   print2u(FAT_DAY(fatDate));
 }
-
 
 /**
  * %Print a directory time field.
@@ -1422,11 +1420,13 @@ int16_t SdBaseFile::read(void * const buf, uint16_t nbyte) {
  *
  * \param[out] dir The dir_t struct that will receive the data.
  *
- * \return For success readDir() returns the number of bytes read.
- * A value of zero will be returned if end of file is reached.
- * If an error occurs, readDir() returns -1.  Possible errors include
- * readDir() called before a directory has been opened, this is not
- * a directory file or an I/O error occurred.
+ * \return For success return a non-zero value (number of bytes read).
+ *         A value of zero will be returned if end of dir is reached.
+ *         If an error occurs, readDir() returns -1. Possible errors:
+ *           - readDir() called on unopened dir
+ *           - not a directory file
+ *           - bad dir entry
+ *           - I/O error
  */
 int8_t SdBaseFile::readDir(dir_t * const dir, char * const longFilename) {
   int16_t n;
@@ -1488,7 +1488,7 @@ int8_t SdBaseFile::readDir(dir_t * const dir, char * const longFilename) {
                   longFilename[idx] = utf16_ch & 0xFF;
                   longFilename[idx + 1] = (utf16_ch >> 8) & 0xFF;
                 #else
-                  // Replace all multibyte characters to '_'
+                  // Replace multibyte character with '_'
                   longFilename[n + i] = (utf16_ch > 0xFF) ? '_' : (utf16_ch & 0xFF);
                 #endif
               }
