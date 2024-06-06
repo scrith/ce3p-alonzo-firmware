@@ -1729,7 +1729,8 @@
 
   //#define MEDIA_MENU_AT_TOP               // Force the media menu to be listed on the top of the main menu
 
-  #define EVENT_GCODE_SD_ABORT "G28XY"      // G-code to run on SD Abort Print (e.g., "G28XY" or "G27")
+  #define EVENT_GCODE_SD_ABORT "G28XY\nG0 F8000 X" STRINGIFY(X_MIN_POS) " Y" STRINGIFY(Y_MAX_POS)
+                                            // G-code to run on SD Abort Print (e.g., "G28XY" or "G27")
 
   #if ENABLED(PRINTER_EVENT_LEDS)
     #define PE_LEDS_COMPLETED_TIME  (30*60) // (seconds) Time to keep the LED "done" color before restoring normal illumination
@@ -1802,11 +1803,11 @@
     #define SDSORT_REVERSE     false  // Default to sorting file names in reverse order.
     #define SDSORT_LIMIT       64     // Maximum number of sorted items (10-256). Costs 27 bytes each.
     #define SDSORT_FOLDERS     -1     // -1=above  0=none  1=below
-    #define SDSORT_GCODE       false  // Allow turning sorting on/off with LCD and M34 G-code.
+    #define SDSORT_GCODE       false  // Enable G-code M34 to set sorting behaviors: M34 S<-1|0|1> F<-1|0|1>
     #define SDSORT_USES_RAM    true  // Pre-allocate a static array for faster pre-sorting.
     #define SDSORT_USES_STACK  false  // Prefer the stack for pre-sorting to give back some SRAM. (Negated by next 2 options.)
     #define SDSORT_CACHE_NAMES true  // Keep sorted items in RAM longer for speedy performance. Most expensive option.
-    #define SDSORT_DYNAMIC_RAM false  // Use dynamic allocation (within SD menus). Least expensive option. Set SDSORT_LIMIT before use!
+    #define SDSORT_DYNAMIC_RAM true  // Use dynamic allocation (within SD menus). Least expensive option. Set SDSORT_LIMIT before use!
     #define SDSORT_CACHE_VFATS 2      // Maximum number of 13-byte VFAT entries to use for sorting.
                                       // Note: Only affects SCROLL_LONG_FILENAMES with SDSORT_CACHE_NAMES but not SDSORT_DYNAMIC_RAM.
   #endif
@@ -3009,7 +3010,7 @@
   #endif
 
   #if AXIS_IS_TMC_CONFIG(Z)
-    #define Z_CURRENT       720
+    #define Z_CURRENT       580
     #define Z_CURRENT_HOME  Z_CURRENT
     #define Z_MICROSTEPS     16
     #define Z_RSENSE          0.11
@@ -4023,12 +4024,12 @@
   #define MAIN_MENU_ITEM_2_CONFIRM
 
   #define MAIN_MENU_ITEM_3_DESC "Cold pull PLA"
-  #define MAIN_MENU_ITEM_3_GCODE "M117 Cold pull PLA \nG28 \nM117 Moving to service position \nG0 F3000 X" STRINGIFY(X_SERVICE_POS) " Y" STRINGIFY(Y_SERVICE_POS) " Z20 \nM300 S220 P50 \nM117 Heating Nozzle \nM109 S100 \nM140 S0 \nM300 S220 P50 \nM117 Thirty second lockout \nG4 S30 \nM300 S220 P50 \nM117 Cooling Down \nM104 S0"
+  #define MAIN_MENU_ITEM_3_GCODE "M117 Cold pull PLA \nG28 \nM117 Moving to service position \nG0 F3000 X" STRINGIFY(X_SERVICE_POS) " Y" STRINGIFY(Y_SERVICE_POS) " Z20 \nM300 S220 P50 \nM117 Heating Nozzle \nM109 S75 \nM140 S0 \nM300 S220 P50 \nM117 Thirty second lockout \nG4 S30 \nM300 S220 P50 \nM117 Cooling Down \nM104 S0"
   //home to center, move up 20mm on z, low-heat nozzle, dwell 30 seconds, cool down, 
   #define MAIN_MENU_ITEM_3_CONFIRM
 
   #define MAIN_MENU_ITEM_4_DESC "Cold pull PETG"
-  #define MAIN_MENU_ITEM_4_GCODE "M117 Cold pull PETG \nG28 \nM117 Moving to service position \nG0 F3000 X" STRINGIFY(X_SERVICE_POS) " Y" STRINGIFY(Y_SERVICE_POS) " Z20 \nM300 S220 P50 \nM117 Heating Nozzle \nM109 S140 \nM140 S0 \nM300 S220 P50 \nM117 Thirty second lockout \nG4 S30 \nM300 S220 P50 \nM117 Cooling Down \nM104 S0"
+  #define MAIN_MENU_ITEM_4_GCODE "M117 Cold pull PETG \nG28 \nM117 Moving to service position \nG0 F3000 X" STRINGIFY(X_SERVICE_POS) " Y" STRINGIFY(Y_SERVICE_POS) " Z20 \nM300 S220 P50 \nM117 Heating Nozzle \nM109 S180 \nM140 S0 \nM300 S220 P50 \nM117 Thirty second lockout \nG4 S30 \nM300 S220 P50 \nM117 Cooling Down \nM104 S0"
   //home to center, move up 20mm on z, low-heat nozzle, dwell 30 seconds, cool down, 
   #define MAIN_MENU_ITEM_4_CONFIRM
 
